@@ -5,6 +5,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
+import domain.Personne;
+
 public class JpaTest {
 
 	private EntityManager manager;
@@ -18,7 +20,7 @@ public class JpaTest {
 	 */
 	public static void main(String[] args) {
 		EntityManagerFactory factory = Persistence
-				.createEntityManagerFactory("dev");
+				.createEntityManagerFactory("mysql");
 		EntityManager manager = factory.createEntityManager();
 		JpaTest test = new JpaTest(manager);
 
@@ -26,8 +28,8 @@ public class JpaTest {
 		tx.begin();
 
 		try {
-
-			
+			Personne p = new Personne();
+			manager.persist(p);			
 			
 			//manager.persist(et);
 			
