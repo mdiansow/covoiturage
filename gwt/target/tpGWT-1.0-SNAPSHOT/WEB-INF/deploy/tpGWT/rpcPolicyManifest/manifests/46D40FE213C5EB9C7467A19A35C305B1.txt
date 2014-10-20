@@ -1,2 +1,0 @@
-serviceClass: fr.istic.m2gla.client.GreetingService
-path: E301E319C75EC556DECE88E55DDC925F.gwt.rpc
