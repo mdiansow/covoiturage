@@ -1,7 +1,7 @@
 package jpa;
 
+import dao.DAO;
 import dao.IDao;
-import dao.PersonneDAO;
 import model.Personne;
 import model.Voiture;
 
@@ -32,14 +32,15 @@ public class JpaTest {
 
         Personne personne = new Personne();
         Voiture voiture = new Voiture();
-        personne.setNom("SOW");
+        personne.setNom("sow");
         personne.setPrenom("Mamadou");
 
-        IDao<Personne> dao = new PersonneDAO();
-        dao.setEm(manager);
+        IDao<Personne> dao = new DAO();
+        dao.setEm(manager, "Personne");
         dao.create(personne);
 
         dao.findAll();
+
        /*
 		try {
 			Personne p = new Personne();
@@ -52,11 +53,9 @@ public class JpaTest {
 			//manager.persist(et);
 			
 
-					
 		} catch (Exception e) {
 			e.printStackTrace();
 		}*/
 		tx.commit();
 	}
-
 }

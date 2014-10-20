@@ -9,7 +9,7 @@ import javax.persistence.Entity;
  *
  * @generated
  */
-@Entity(name = "m2gla_Preferences")
+//@Entity(name = "m2gla_Preferences")
 public class Preferences {
     /**
      * <!-- begin-user-doc -->

@@ -23,7 +23,7 @@ public interface IDao<T extends Serializable> {
      *
      * @param em : the entity manager
      */
-    public void setEm(EntityManager em);
+    public void setEm(EntityManager em, String nameClass);
 
     /**
      * Gets the entity manager for the database.
