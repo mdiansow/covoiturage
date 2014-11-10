@@ -4,6 +4,7 @@ package model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 /**
  * <!-- begin-user-doc -->
@@ -65,6 +66,24 @@ public class Avis {
      */
 
     private int note;
+
+    /**
+     *
+     */
+    private Personne personne;
+
+    /**
+     *
+     * @return
+     */
+    @ManyToOne
+    public Personne getPersonne() {
+        return personne;
+    }
+
+    public void setPersonne(Personne personne) {
+        this.personne = personne;
+    }
 
     /**
      * <!-- begin-user-doc -->

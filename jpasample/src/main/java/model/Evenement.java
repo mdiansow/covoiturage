@@ -3,6 +3,7 @@ package model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.Date;
@@ -126,6 +127,15 @@ public class Evenement {
 
    // private Personne participant;
 
+    @ManyToMany(mappedBy = "myEvents")
+    public Set<Personne> getParticipant() {
+        return participant;
+    }
+
+    public void setParticipant(Set<Personne> participant) {
+        this.participant = participant;
+    }
+
     /**
      * <!-- begin-user-doc -->
      * <!--  end-user-doc  -->
@@ -134,7 +144,7 @@ public class Evenement {
      * @ordered
      */
 
-//    private Set<Personne> participant;
+   private Set<Personne> participant;
 
     /**
      * <!-- begin-user-doc -->

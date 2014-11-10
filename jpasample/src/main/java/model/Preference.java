@@ -2,6 +2,7 @@ package model;
 
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -43,16 +44,16 @@ public class Preference
 
     private String valPref;
 
-    @ManyToOne
-    public Personne getPersonne() {
-        return personne;
+   /* @OneToMany
+    public List<Personne> getPersonnes() {
+        return personnes;
     }
 
-    public void setPersonne(Personne personne) {
-        this.personne = personne;
-    }
+    public void setPersonnes(List<Personne> personnes) {
+        this.personnes = personnes;
+    }*/
 
-    private Personne personne;
+   //private List<Personne> personnes;
 
     public String getNomPref() {
         return nomPref;
