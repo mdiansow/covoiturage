@@ -1,5 +1,7 @@
 package fr.istic.m2gla.client;
 
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.*;
 import fr.istic.m2gla.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -9,141 +11,174 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class tpGWT implements EntryPoint {
-  /**
-   * The message displayed to the user when the server cannot be reached or
-   * returns an error.
-   */
-  private static final String SERVER_ERROR = "An error occurred while "
-      + "attempting to contact the server. Please check your network "
-      + "connection and try again.";
+    /**
+     * The message displayed to the user when the server cannot be reached or
+     * returns an error.
+     */
+    private static final String SERVER_ERROR = "An error occurred while "
+            + "attempting to contact the server. Please check your network "
+            + "connection and try again.";
 
-  /**
-   * Create a remote service proxy to talk to the server-side Greeting service.
-   */
-  private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+    /**
+     * Create a remote service proxy to talk to the server-side Greeting service.
+     */
+    private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
 
-  private final Messages messages = GWT.create(Messages.class);
+    private final Messages messages = GWT.create(Messages.class);
 
-  /**
-   * This is the entry point method.
-   */
-  public void onModuleLoad() {
-    final Button sendButton = new Button( messages.sendButton() );
-    final TextBox nameField = new TextBox();
-    nameField.setText( messages.nameField() );
-    final Label errorLabel = new Label();
+    private static final int HeaderRowIndex = 0;
+    private static final Object[][] rowData = {
+            { new RadioButton("RadioGrp1", "Personne"), new RadioButton("RadioGrp2", "Création")},
+            { new RadioButton("RadioGrp1", "Voiture"), new RadioButton("RadioGrp2", "Suppression")},
+            { new RadioButton("RadioGrp1", "Ville"), new RadioButton("RadioGrp2", "Afficher les tous")},
+            { new RadioButton("RadioGrp1", "Avis"), new RadioButton("RadioGrp2", "Afficher un seul")},
+            { new RadioButton("RadioGrp1", "Preference"), new RadioButton("RadioGrp2", "Modification")},
+            { new RadioButton("RadioGrp1", "Evenement"), "HaHa"},
+    };
 
-    // We can add style names to widgets
-    sendButton.addStyleName("sendButton");
 
-    // Add the nameField and sendButton to the RootPanel
-    // Use RootPanel.get() to get the entire body element
-    RootPanel.get("nameFieldContainer").add(nameField);
-    RootPanel.get("sendButtonContainer").add(sendButton);
-    RootPanel.get("errorLabelContainer").add(errorLabel);
 
-    // Focus the cursor on the name field when the app loads
-    nameField.setFocus(true);
-    nameField.selectAll();
+    private FlexTable flexTable = new FlexTable();
+    /**
+     * This is the entry point method.
+     */
+    public void onModuleLoad() {
 
-    // Create the popup dialog box
-    final DialogBox dialogBox = new DialogBox();
-    dialogBox.setText("Remote Procedure Call");
-    dialogBox.setAnimationEnabled(true);
-    final Button closeButton = new Button("Close");
-    // We can set the id of a widget by accessing its Element
-    closeButton.getElement().setId("closeButton");
-    final Label textToServerLabel = new Label();
-    final HTML serverResponseLabel = new HTML();
-    VerticalPanel dialogVPanel = new VerticalPanel();
-    dialogVPanel.addStyleName("dialogVPanel");
-    dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
-    dialogVPanel.add(textToServerLabel);
-    dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
-    dialogVPanel.add(serverResponseLabel);
-    dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
-    dialogVPanel.add(closeButton);
-    dialogBox.setWidget(dialogVPanel);
+        flexTable.insertRow(HeaderRowIndex);
+        flexTable.getRowFormatter().addStyleName(HeaderRowIndex,"FlexTable-Header");
 
-    // Add a handler to close the DialogBox
-    closeButton.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        dialogBox.hide();
-        sendButton.setEnabled(true);
-        sendButton.setFocus(true);
-      }
-    });
+        addColumn("Objects");
+        addColumn("Actions");
 
-    // Create a handler for the sendButton and nameField
-    class MyHandler implements ClickHandler, KeyUpHandler {
-      /**
-       * Fired when the user clicks on the sendButton.
-       */
-      public void onClick(ClickEvent event) {
-        sendNameToServer();
-      }
 
-      /**
-       * Fired when the user types in the nameField.
-       */
-      public void onKeyUp(KeyUpEvent event) {
-        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-          sendNameToServer();
-        }
-      }
-
-      /**
-       * Send the name from the nameField to the server and wait for a response.
-       */
-      private void sendNameToServer() {
-        // First, we validate the input.
-        errorLabel.setText("");
-        String textToServer = nameField.getText();
-        if (!FieldVerifier.isValidName(textToServer)) {
-          errorLabel.setText("Please enter at least four characters");
-          return;
+        for (int row = 0; row < rowData.length; row++) {
+            addRow(rowData[row]);
         }
 
-        // Then, we send the input to the server.
-        sendButton.setEnabled(false);
-        textToServerLabel.setText(textToServer);
-        serverResponseLabel.setText("");
-        greetingService.greetServer(textToServer, new AsyncCallback<String>() {
-          public void onFailure(Throwable caught) {
-            // Show the RPC error message to the user
-            dialogBox.setText("Remote Procedure Call - Failure");
-            serverResponseLabel.addStyleName("serverResponseLabelError");
-            serverResponseLabel.setHTML(SERVER_ERROR);
-            dialogBox.center();
-            closeButton.setFocus(true);
-          }
+        applyDataRowStyles();
 
-          public void onSuccess(String result) {
-            dialogBox.setText("Remote Procedure Call");
-            serverResponseLabel.removeStyleName("serverResponseLabelError");
-            serverResponseLabel.setHTML(result);
-            dialogBox.center();
-            closeButton.setFocus(true);
-          }
+        flexTable.setCellSpacing(0);
+        flexTable.addStyleName("FlexTable");
+
+        RootPanel.get("container").add(flexTable);
+
+
+
+
+
+        Button b = new Button("Go!", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                Window.alert("How high?");
+            }
         });
-      }
+
+        // Add it to the root panel.
+        RootPanel.get("container").add(b);
+
+
+
+        if (true) {
+            // Make a new list box, adding a few items to it.
+            ListBox lb = new ListBox();
+            lb.addItem("foo");
+            lb.addItem("bar");
+            lb.addItem("baz");
+            lb.addItem("toto");
+            lb.addItem("tintin");
+
+            // Make enough room for all five items (setting this value to 1 turns it
+            // into a drop-down list).
+            lb.setVisibleItemCount(1);
+
+            // Add it to the root panel.
+            RootPanel.get("container").add(lb);
+
+        }
+
+
+
+        FlowPanel fp = new FlowPanel();
+
+        fp.setStyleName("center");
+        RootPanel.get().add(fp);
+
+
     }
 
-    // Add a handler to send the name to the server
-    MyHandler handler = new MyHandler();
-    sendButton.addClickHandler(handler);
-    nameField.addKeyUpHandler(handler);
-  }
+    private void addColumn(Object columnHeading) {
+        Widget widget = createCellWidget(columnHeading);
+        int cell = flexTable.getCellCount(HeaderRowIndex);
+
+        widget.setWidth("100%");
+        widget.addStyleName("FlexTable-ColumnLabel");
+
+        flexTable.setWidget(HeaderRowIndex, cell, widget);
+
+        flexTable.getCellFormatter().addStyleName(
+                HeaderRowIndex, cell,"FlexTable-ColumnLabelCell");
+    }
+
+    private Widget createCellWidget(Object cellObject) {
+        Widget widget = null;
+
+        if (cellObject instanceof Widget)
+            widget = (Widget) cellObject;
+        else
+            widget = new Label(cellObject.toString());
+
+        return widget;
+    }
+    int rowIndex = 1;
+    private void addRow(Object[] cellObjects) {
+
+        for (int cell = 0; cell < cellObjects.length; cell++) {
+            Widget widget = createCellWidget(cellObjects[cell]);
+            flexTable.setWidget(rowIndex, cell, widget);
+            flexTable.getCellFormatter().addStyleName(rowIndex,cell,"FlexTable-Cell");
+        }
+        rowIndex++;
+    }
+
+    private void applyDataRowStyles() {
+        HTMLTable.RowFormatter rf = flexTable.getRowFormatter();
+
+        for (int row = 1; row < flexTable.getRowCount(); ++row) {
+            if ((row % 2) != 0) {
+                rf.addStyleName(row, "FlexTable-OddRow");
+            }
+            else {
+                rf.addStyleName(row, "FlexTable-EvenRow");
+            }
+        }
+    }
+
+
+    private List<String> afficherList(String type){
+        List<String> entity = new ArrayList<String>();
+
+        entity.add("Personne");
+        entity.add("Voiture");
+        entity.add("Ville");
+        entity.add("Avis");
+        entity.add("Preference");
+        entity.add("Evenement");
+
+        List<String> values = new ArrayList<String>();
+
+        if (entity.contains(type)){
+            values.add("List des XXXX");
+            //utilisation du travail de mamadou
+        }else{
+            values.add("Aucun");
+        }
+        return values;
+    }
 }
