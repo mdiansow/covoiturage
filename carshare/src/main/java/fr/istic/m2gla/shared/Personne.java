@@ -174,7 +174,7 @@ public class Personne implements Serializable {
      */
     private List<Avis> mesAvis = new ArrayList<Avis>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "personne")
     public List<Avis> getMesAvis() {
         return mesAvis;
     }

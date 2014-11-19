@@ -26,7 +26,7 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public void delete(Evenement entity) {
+    public void delete(long entity) {
 
     }
 

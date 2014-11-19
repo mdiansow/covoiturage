@@ -27,7 +27,7 @@ public interface IService<T> {
      *
      * @param entity the entity to delete
      */
-    public void delete(T entity);
+    public void delete(long entity);
 
     /**
      * Update the entity.
