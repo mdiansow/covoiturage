@@ -48,14 +48,17 @@ public class PersonServiceImpl implements IPersonService{
 
     @Override
     @POST
+    @Consumes({ MediaType.APPLICATION_JSON })
     @Path("create")
     public void create(Personne entity) {
         System.out.println("Create de AbstractDAO : "+entity.getClass().toString());
         if(entity == null)
             throw new PersistenceException("Entity to persist may not be null");//throw Persistence exception
-        em.getTransaction().begin();
+        EntityTransaction t = em.getTransaction();
+        t.begin();
         try {
             em.persist(entity);
+            t.commit();
         }
         catch(Exception e){
             System.out.println("error persist commande"+e.toString());
@@ -63,8 +66,18 @@ public class PersonServiceImpl implements IPersonService{
     }
 
     @Override
-    public void delete(Personne entity) {
+    @GET
+    @Path("delete/{id}")
+    public void delete(@PathParam("id") long id) {
+        Personne result = null;
+        if (id < 0 || id < 1)
+            throw new PersistenceException("Id may not be null or negative");
+        result = em.find(Personne.class,id);
 
+        EntityTransaction t = em.getTransaction();
+        t.begin();
+        em.remove(result);
+        t.commit();
     }
 
     @Override
