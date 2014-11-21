@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 pse
 .classpath
 .project
@@ -14,3 +15,8 @@ pse
 # Maven
 log/
 target/
+=======
+carshare/.idea/
+carshare/target/
+carshare/carshare.iml
+>>>>>>> 5c54c59... Probleme fixed
