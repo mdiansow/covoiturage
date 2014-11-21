@@ -4,13 +4,6 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-
-    <!-- Servlets -->
-    <servlet>
-        <servlet-name>greetServlet</servlet-name>
-        <servlet-class>fr.istic.m2gla.server.GreetingServiceImpl</servlet-class>
-    </servlet>
-
     <servlet>
         <servlet-name>jersey</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -23,21 +16,15 @@
             <param-value>true</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
-
     </servlet>
+
     <servlet-mapping>
         <servlet-name>jersey</servlet-name>
         <url-pattern>/rest/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>greetServlet</servlet-name>
-        <url-pattern>/carshare/greet</url-pattern>
     </servlet-mapping>
 
     <!-- Default page to serve -->
     <welcome-file-list>
         <welcome-file>carshare.html</welcome-file>
     </welcome-file-list>
-
 </web-app>

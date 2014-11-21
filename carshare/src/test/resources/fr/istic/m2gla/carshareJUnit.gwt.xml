@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
   <!-- Inherit our applications main module.                      -->
-  <inherits name='fr.istic.m2gla.carshare' />
+  <inherits name='fr.istic.m2gla.Carshare' />
 
   <!-- Specify the path to any remote services.                   -->
   <servlet path="/carshare/greet" class="fr.istic.m2gla.server.GreetingServiceImpl" />

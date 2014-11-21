@@ -14,7 +14,7 @@
         function PostUsers($scope, $htpp){
         $http({method: 'GET', url: '/rest/user/'}).success(function(data){
         $scope.posts = data;
-        }
+        });
         }
 
 
