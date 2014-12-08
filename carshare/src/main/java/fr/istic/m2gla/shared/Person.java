@@ -12,8 +12,8 @@ import java.util.List;
  *
  * @generated
  */
-@Entity(name = "m2gla_personne")
-public class Personne implements Serializable {
+@Entity
+public class Person implements Serializable {
     /**
      * <!-- begin-user-doc -->
      * <!--  end-user-doc  -->
@@ -108,7 +108,7 @@ public class Personne implements Serializable {
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "m2gla_person_pref",
-            joinColumns ={@JoinColumn(name = "personne_id")},
+            joinColumns = {@JoinColumn(name = "personne_id")},
             inverseJoinColumns = @JoinColumn(name = "preference_id")
     )
     public List<Preference> getPreferences() {
@@ -145,18 +145,19 @@ public class Personne implements Serializable {
      * @ordered
      */
 
-    //private Set<Evenement> evenement;
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "m2gla_person_Event",
-            joinColumns ={@JoinColumn(name = "personne_id")},
-            inverseJoinColumns = @JoinColumn(name = "evenement_id")
-    )
-    public List<Evenement> getMyEvents() {
+//    //private Set<Evenement> evenement;
+//    @ManyToMany(cascade = CascadeType.PERSIST)
+//    @JoinTable(
+//            name = "m2gla_person_Event",
+//            joinColumns ={@JoinColumn(name = "personne_id")},
+//            inverseJoinColumns = @JoinColumn(name = "evenement_id")
+//    )
+    @OneToMany
+    public List<Event> getMyEvents() {
         return myEvents;
     }
 
-    public void setMyEvents(List<Evenement> myEvents) {
+    public void setMyEvents(List<Event> myEvents) {
         this.myEvents = myEvents;
     }
 
@@ -167,7 +168,7 @@ public class Personne implements Serializable {
      * @generated
      * @ordered
      */
-    private List<Evenement> myEvents = new ArrayList<Evenement>();
+    private List<Event> myEvents = new ArrayList<Event>();
 
     /**
      *
@@ -189,7 +190,7 @@ public class Personne implements Serializable {
      *
      * @generated
      */
-    public Personne() {
+    public Person() {
         super();
     }
 

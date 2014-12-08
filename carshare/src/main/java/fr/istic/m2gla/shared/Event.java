@@ -1,9 +1,6 @@
 package fr.istic.m2gla.shared;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -15,8 +12,8 @@ import java.util.Set;
  *
  * @generated
  */
-@Entity(name = "m2gla_event")
-public class Evenement {
+@Entity
+public class Event {
     @Id
     @GeneratedValue
     public long getId() {
@@ -58,14 +55,6 @@ public class Evenement {
     public void setVilles(LinkedHashSet<Ville> villes) {
         this.villes = villes;
     }
-
-  /*  public Set<Personne> getPassager() {
-        return passager;
-    }
-
-    public void setPassager(Set<Personne> passager) {
-        this.passager = passager;
-    }*/
 
     /**
      * <!-- begin-user-doc -->
@@ -125,8 +114,7 @@ public class Evenement {
      * @ordered
      */
 
-   // private Personne participant;
-
+    // private Personne participant;
     @ManyToMany(mappedBy = "myEvents")
     public Set<Personne> getParticipant() {
         return participant;
@@ -144,7 +132,18 @@ public class Evenement {
      * @ordered
      */
 
-   private Set<Personne> participant;
+    private Set<Personne> participant;
+
+    private Personne owner;
+
+    @OneToMany(mappedBy = "myEvents")
+    public Personne getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Personne owner) {
+        this.owner = owner;
+    }
 
     /**
      * <!-- begin-user-doc -->
@@ -152,7 +151,7 @@ public class Evenement {
      *
      * @generated
      */
-    public Evenement() {
+    public Event() {
         super();
     }
 
