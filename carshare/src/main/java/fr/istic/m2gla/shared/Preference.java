@@ -10,7 +10,7 @@ import javax.persistence.Id;
  * <!--  end-user-doc  -->
  * @generated
  */
-@Entity(name = "m2gla_preference")
+@Entity
 public class Preference
 {
     @Id

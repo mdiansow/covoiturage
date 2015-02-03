@@ -11,7 +11,7 @@ import javax.persistence.OneToOne;
  * <!--  end-user-doc  -->
  * @generated
  */
-@Entity(name = "m2gla_voiture")
+@Entity
 public class Voiture
 {
 	/**
@@ -110,12 +110,12 @@ public class Voiture
     }
 
     @OneToOne(mappedBy = "voiture")
-    public Personne getPersonne() {
-        return personne;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setPersonne(Personne personne) {
-        this.personne = personne;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     /**
@@ -152,7 +152,7 @@ public class Voiture
 	 * @generated
 	 * @ordered
 	 */
-	private Personne personne;
+	private Person person;
 	
 	/**
 	 * <!-- begin-user-doc -->

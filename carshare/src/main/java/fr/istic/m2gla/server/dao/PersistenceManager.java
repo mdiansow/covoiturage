@@ -1,4 +1,4 @@
-package fr.istic.m2gla.server;
+package fr.istic.m2gla.server.dao;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -15,7 +15,6 @@ public class PersistenceManager {
     protected EntityManagerFactory emf;
 
     public static PersistenceManager getInstance() {
-
         return singleton;
     }
 
@@ -41,7 +40,7 @@ public class PersistenceManager {
 
     protected void createEntityManagerFactory() {
 
-        this.emf = Persistence.createEntityManagerFactory("OrderPU");
+        this.emf = Persistence.createEntityManagerFactory("mysql");
         if (DEBUG)
             System.out.println("n*** Persistence started at " + new java.util.Date());
     }

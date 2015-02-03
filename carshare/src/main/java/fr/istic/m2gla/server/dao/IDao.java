@@ -1,11 +1,11 @@
-package fr.istic.m2gla.server;
+package fr.istic.m2gla.server.dao;
 
 import java.util.Collection;
 
 /**
  * Created by mds on 10/11/14.
  */
-public interface IService<T> {
+public interface IDao<T> {
     public T findById(long id);
 
     /**

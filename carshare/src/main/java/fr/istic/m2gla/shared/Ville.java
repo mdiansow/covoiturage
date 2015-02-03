@@ -10,7 +10,7 @@ import javax.persistence.Id;
  * <!--  end-user-doc  -->
  * @generated
  */
-@Entity(name = "m2gla_ville")
+@Entity
 public class Ville
 
 {
@@ -49,6 +49,7 @@ public class Ville
 	public Ville(){
 		super();
 	}
+
 
     @Id
     @GeneratedValue

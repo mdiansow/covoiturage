@@ -1,9 +1,12 @@
 package fr.istic.m2gla.shared;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 
 /**
@@ -107,42 +110,33 @@ public class Event {
     private LinkedHashSet<Ville> villes;
 
     /**
-     * <!-- begin-user-doc -->
-     * <!--  end-user-doc  -->
-     *
-     * @generated
-     * @ordered
+     * The travellers of the event
      */
+    private List<Person> travellers = new ArrayList<>();
 
-    // private Personne participant;
-    @ManyToMany(mappedBy = "myEvents")
-    public Set<Personne> getParticipant() {
-        return participant;
+    @OneToMany
+    @JoinTable(name = "TRAVELLERS")
+    public List<Person> getTravellers() {
+        return travellers;
     }
 
-    public void setParticipant(Set<Personne> participant) {
-        this.participant = participant;
+    public void setTravellers(List<Person> travellers) {
+        this.travellers = travellers;
     }
 
-    /**
-     * <!-- begin-user-doc -->
-     * <!--  end-user-doc  -->
-     *
-     * @generated
-     * @ordered
-     */
+    @JsonIgnore
+    private Person owner;
 
-    private Set<Personne> participant;
-
-    private Personne owner;
-
-    @OneToMany(mappedBy = "myEvents")
-    public Personne getOwner() {
+    @ManyToOne
+    public Person getOwner() {
         return owner;
     }
 
-    public void setOwner(Personne owner) {
+    public void setOwner(Person owner) {
         this.owner = owner;
+//        if (!owner.getMyEvents().contains(this)) {
+//            owner.addEvent(this);
+//        }
     }
 
     /**
@@ -155,5 +149,10 @@ public class Event {
         super();
     }
 
+    public void addTraveller(Person trav) {
+        if (!this.getTravellers().contains(trav)) {
+            this.travellers.add(trav);
+        }
+    }
 }
 

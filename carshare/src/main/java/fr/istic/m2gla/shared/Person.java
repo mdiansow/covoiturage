@@ -1,7 +1,6 @@
 package fr.istic.m2gla.shared;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
  * @generated
  */
 @Entity
-public class Person implements Serializable {
+public class Person {
     /**
      * <!-- begin-user-doc -->
      * <!--  end-user-doc  -->
@@ -34,6 +33,25 @@ public class Person implements Serializable {
 
     private String prenom;
 
+    @Column(unique = true)
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!--  end-user-doc  -->
+     *
+     * @generated
+     * @ordered
+     */
+
+    private String email;
+
     /**
      * <!-- begin-user-doc -->
      * <!--  end-user-doc  -->
@@ -44,7 +62,7 @@ public class Person implements Serializable {
 
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     public Ville getAddress() {
         return address;
     }
@@ -117,14 +135,6 @@ public class Person implements Serializable {
 
     public void setPreferences(List<Preference> preferences) {
         this.preferences = preferences;
-
-     /*   for(Preference p:this.preferences){
-            List<Personne> listPers = p.getPersonnes();
-            if(listPers == null)
-                listPers = new ArrayList<>();
-            listPers.add(this);
-            p.setPersonnes(listPers);
-        }*/
     }
 
     /**
@@ -137,22 +147,25 @@ public class Person implements Serializable {
 
     private List<Preference> preferences = new ArrayList<Preference>();
 
+//    @ManyToMany
+//    public List<Event> getMyTravels() {
+//        return myTravels;
+//    }
+//
+//    public void setMyTravels(List<Event> myTravels) {
+//        this.myTravels = myTravels;
+//    }
+
     /**
-     * <!-- begin-user-doc -->
-     * <!--  end-user-doc  -->
+     * The travels during which I am the driver
      *
      * @generated
      * @ordered
      */
 
-//    //private Set<Evenement> evenement;
-//    @ManyToMany(cascade = CascadeType.PERSIST)
-//    @JoinTable(
-//            name = "m2gla_person_Event",
-//            joinColumns ={@JoinColumn(name = "personne_id")},
-//            inverseJoinColumns = @JoinColumn(name = "evenement_id")
-//    )
-    @OneToMany
+    private List<Event> myEvents;
+
+    @OneToMany(mappedBy = "owner")
     public List<Event> getMyEvents() {
         return myEvents;
     }
@@ -162,20 +175,25 @@ public class Person implements Serializable {
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!--  end-user-doc  -->
-     *
-     * @generated
-     * @ordered
+     * The events during witch I am a traveller
      */
-    private List<Event> myEvents = new ArrayList<Event>();
+    private List<Event> myTravels;
+
+    @OneToMany
+    public List<Event> getMyTravels() {
+        return myTravels;
+    }
+
+    public void setMyTravels(List<Event> myTravels) {
+        this.myTravels = myTravels;
+    }
 
     /**
      *
      */
     private List<Avis> mesAvis = new ArrayList<Avis>();
 
-    @OneToMany(mappedBy = "personne")
+    @OneToMany(mappedBy = "person")
     public List<Avis> getMesAvis() {
         return mesAvis;
     }
@@ -194,5 +212,11 @@ public class Person implements Serializable {
         super();
     }
 
+    public void addEvent(Event event) {
+        this.myEvents.add(event);
+        if (event.getOwner() != this) {
+            event.setOwner(this);
+        }
+    }
 }
 

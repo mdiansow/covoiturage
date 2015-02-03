@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
  *
  * @generated
  */
-@Entity(name = "m2gla_Avis")
+@Entity
 public class Avis {
     @Id
     @GeneratedValue
@@ -70,19 +70,19 @@ public class Avis {
     /**
      *
      */
-    private Personne personne;
+    private Person person;
 
     /**
      *
      * @return
      */
     @ManyToOne
-    public Personne getPersonne() {
-        return personne;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setPersonne(Personne personne) {
-        this.personne = personne;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     /**
