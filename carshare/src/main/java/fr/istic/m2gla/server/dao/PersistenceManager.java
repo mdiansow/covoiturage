@@ -40,7 +40,7 @@ public class PersistenceManager {
 
     protected void createEntityManagerFactory() {
 
-        this.emf = Persistence.createEntityManagerFactory("mysql");
+        this.emf = Persistence.createEntityManagerFactory("dev");
         if (DEBUG)
             System.out.println("n*** Persistence started at " + new java.util.Date());
     }

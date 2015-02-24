@@ -2,6 +2,7 @@ package fr.istic.m2gla.shared;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @generated
  */
 @Entity
-public class Person {
+public class Person implements IPerson {
     /**
      * <!-- begin-user-doc -->
      * <!--  end-user-doc  -->
@@ -32,12 +33,16 @@ public class Person {
      */
 
     private String prenom;
+    private String civilite;
+    private Date dateDeNaissance;
 
+    @Override
     @Column(unique = true)
     public String getEmail() {
         return email;
     }
 
+    @Override
     public void setEmail(String email) {
         this.email = email;
     }
@@ -62,48 +67,103 @@ public class Person {
 
     private long id;
 
+    @Column(unique = true)
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    private String username;
+
+    private String password;
+
+    @Override
     @ManyToOne
     public Ville getAddress() {
         return address;
     }
 
+    @Override
     public void setAddress(Ville address) {
         this.address = address;
     }
 
     private Ville address;
 
+    @Override
     public String getNom() {
         return nom;
     }
 
+    @Override
     public void setNom(String nom) {
         this.nom = nom;
     }
 
+    @Override
     public String getPrenom() {
         return prenom;
     }
 
+    @Override
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
 
+    @Override
+    public String getCivilite() {
+        return civilite;
+    }
+
+    @Override
+    public void setCivilite(String civilite) {
+        this.civilite = civilite;
+    }
+
+    @Override
+    public Date getDateDeNaissance() {
+        return dateDeNaissance;
+    }
+
+    @Override
+    public void setDateDeNaissance(Date dateDeNaissance) {
+        this.dateDeNaissance = dateDeNaissance;
+    }
+
+    @Override
     @Id
     @GeneratedValue
     public long getId() {
         return id;
     }
 
+    @Override
     public void setId(long id) {
         this.id = id;
     }
 
+    @Override
     @OneToOne(cascade = CascadeType.ALL)
     public Voiture getVoiture() {
         return voiture;
     }
 
+    @Override
     public void setVoiture(Voiture voiture) {
         this.voiture = voiture;
     }
@@ -123,6 +183,7 @@ public class Person {
 /*
     @JoinTable(name = "Prefs&Personnes")
 */
+    @Override
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "m2gla_person_pref",
@@ -133,6 +194,7 @@ public class Person {
         return preferences;
     }
 
+    @Override
     public void setPreferences(List<Preference> preferences) {
         this.preferences = preferences;
     }
@@ -165,11 +227,13 @@ public class Person {
 
     private List<Event> myEvents;
 
-    @OneToMany(mappedBy = "owner")
+    @Override
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     public List<Event> getMyEvents() {
         return myEvents;
     }
 
+    @Override
     public void setMyEvents(List<Event> myEvents) {
         this.myEvents = myEvents;
     }
@@ -179,11 +243,13 @@ public class Person {
      */
     private List<Event> myTravels;
 
-    @OneToMany
+    @Override
+    @OneToMany(cascade = CascadeType.PERSIST)
     public List<Event> getMyTravels() {
         return myTravels;
     }
 
+    @Override
     public void setMyTravels(List<Event> myTravels) {
         this.myTravels = myTravels;
     }
@@ -193,11 +259,13 @@ public class Person {
      */
     private List<Avis> mesAvis = new ArrayList<Avis>();
 
+    @Override
     @OneToMany(mappedBy = "person")
     public List<Avis> getMesAvis() {
         return mesAvis;
     }
 
+    @Override
     public void setMesAvis(List<Avis> mesAvis) {
         this.mesAvis = mesAvis;
     }

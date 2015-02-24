@@ -10,4 +10,10 @@ import java.util.List;
  */
 public interface IPersonDAO extends IDao<Person> {
     public List<Event> findEventsByPersonID(long id);
+
+    public Person findByLogger(String username, String password);
+
+    public Person findByUsername(String username);
+
+    Person findBbyEmail(String email);
 }

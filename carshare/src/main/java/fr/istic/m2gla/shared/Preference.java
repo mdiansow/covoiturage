@@ -11,8 +11,7 @@ import javax.persistence.Id;
  * @generated
  */
 @Entity
-public class Preference
-{
+public class Preference implements IPreference {
     @Id
     @GeneratedValue
     public long getId() {
@@ -55,18 +54,22 @@ public class Preference
 
    //private List<Personne> personnes;
 
+    @Override
     public String getNomPref() {
         return nomPref;
     }
 
+    @Override
     public String getValPref() {
         return valPref;
     }
 
+    @Override
     public void setValPref(String valPref) {
         this.valPref = valPref;
     }
 
+    @Override
     public void setNomPref(String nomPref) {
         this.nomPref = nomPref;
     }

@@ -3,10 +3,7 @@ package fr.istic.m2gla.shared;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -16,7 +13,7 @@ import java.util.List;
  * @generated
  */
 @Entity
-public class Event {
+public class Event implements IEvent {
     @Id
     @GeneratedValue
     public long getId() {
@@ -27,36 +24,37 @@ public class Event {
         this.id = id;
     }
 
+    @Override
     public Date getDate() {
         return date;
     }
 
+    @Override
     public void setDate(Date date) {
         this.date = date;
     }
 
-    public String getLieu() {
-        return lieu;
-    }
 
-    public void setLieu(String lieu) {
-        this.lieu = lieu;
-    }
-
+    @Override
     public int getPrix() {
         return prix;
     }
 
+    @Override
     public void setPrix(int prix) {
         this.prix = prix;
     }
 
-    public LinkedHashSet<Ville> getVilles() {
-        return villes;
+    @Override
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "VILLES_ETAPES")
+    public Set<Ville> getVillesEtapes() {
+        return villesEtapes;
     }
 
-    public void setVilles(LinkedHashSet<Ville> villes) {
-        this.villes = villes;
+    @Override
+    public void setVillesEtapes(Set villesEtapes) {
+        this.villesEtapes = villesEtapes;
     }
 
     /**
@@ -87,7 +85,18 @@ public class Event {
      * @ordered
      */
 
-    private String lieu;
+    private Ville depart;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!--  end-user-doc  -->
+     *
+     * @generated
+     * @ordered
+     */
+
+    private Ville arrivee;
+
 
     /**
      * <!-- begin-user-doc -->
@@ -106,20 +115,22 @@ public class Event {
      * @generated
      * @ordered
      */
-
-    private LinkedHashSet<Ville> villes;
+    @JsonIgnore
+    private Set<Ville> villesEtapes = new LinkedHashSet<>();
 
     /**
      * The travellers of the event
      */
     private List<Person> travellers = new ArrayList<>();
 
+    @Override
     @OneToMany
     @JoinTable(name = "TRAVELLERS")
     public List<Person> getTravellers() {
         return travellers;
     }
 
+    @Override
     public void setTravellers(List<Person> travellers) {
         this.travellers = travellers;
     }
@@ -127,11 +138,35 @@ public class Event {
     @JsonIgnore
     private Person owner;
 
+    @Override
     @ManyToOne
     public Person getOwner() {
         return owner;
     }
 
+    @Override
+    @ManyToOne
+    public Ville getArrivee() {
+        return arrivee;
+    }
+
+    @Override
+    public void setArrivee(Ville arrivee) {
+        this.arrivee = arrivee;
+    }
+
+    @Override
+    @ManyToOne
+    public Ville getDepart() {
+        return depart;
+    }
+
+    @Override
+    public void setDepart(Ville depart) {
+        this.depart = depart;
+    }
+
+    @Override
     public void setOwner(Person owner) {
         this.owner = owner;
 //        if (!owner.getMyEvents().contains(this)) {
@@ -149,10 +184,13 @@ public class Event {
         super();
     }
 
+    @Override
     public void addTraveller(Person trav) {
         if (!this.getTravellers().contains(trav)) {
             this.travellers.add(trav);
         }
     }
+
+
 }
 

@@ -1,174 +1,507 @@
-
 package fr.istic.m2gla.client;
 
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.http.client.*;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.cellview.client.CellList;
+import com.google.gwt.user.cellview.client.HasKeyboardPagingPolicy.KeyboardPagingPolicy;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.datepicker.client.DateBox;
+import com.google.gwt.user.datepicker.client.DateBox.DefaultFormat;
+import com.google.gwt.widget.client.TextButton;
+import fr.istic.m2gla.shared.EntityFactory;
+import fr.istic.m2gla.shared.IPerson;
 
-import java.util.ArrayList;
+import javax.ws.rs.core.MediaType;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Carshare implements EntryPoint {
-
-
+public class Carshare implements EntryPoint, ClickHandler {
+    /**
+     * The message displayed to the user when the server cannot be reached or
+     * returns an error.
+     */
     private static final String SERVER_ERROR = "An error occurred while "
             + "attempting to contact the server. Please check your network "
             + "connection and try again.";
 
-    /**
-     * Create a remote service proxy to talk to the server-side Greeting service.
-     */
+    // The list of data to display.
+    private static final List<String> DAYS = Arrays.asList("Sunday", "Monday",
+            "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
 
-    private final Messages messages = GWT.create(Messages.class);
 
-    private static final int HeaderRowIndex = 0;
-    private static final Object[][] rowData = {
-            { new RadioButton("RadioGrp1", "Personne"), new RadioButton("RadioGrp2", "Création")},
-            { new RadioButton("RadioGrp1", "Voiture"), new RadioButton("RadioGrp2", "Suppression")},
-            { new RadioButton("RadioGrp1", "Ville"), new RadioButton("RadioGrp2", "Afficher les tous")},
-            { new RadioButton("RadioGrp1", "Avis"), new RadioButton("RadioGrp2", "Afficher un seul")},
-            { new RadioButton("RadioGrp1", "Preference"), new RadioButton("RadioGrp2", "Modification")},
-            { new RadioButton("RadioGrp1", "Evenement"), "HaHa"},
-    };
+    private FlexTable loginFlexTable;
+    private TextButton txtbtnLogin;
+    private TextBox txtbxUsername;
+    private PasswordTextBox pswrdtxtbxPassword;
+    private TextBox txtbxNom;
+    private TextBox txtbxPrnom;
+    private TextBox txtbxPseudo;
+    private TextBox txtbxEmail;
+    private PasswordTextBox pswrdtxtbxPassword_add;
+    private PasswordTextBox pswrdtxtbxConfirmePassword;
+    private DateBox dateDateBox;
+    private TextBox txtbxCommuneDepart;
+    private TextBox txtbxCommuneArriveer;
+    private TextBox txtbxCodePostalArrivee;
+    private FlexTable addEventFlexTable;
+    private FlexTable addVoitureFlexTable;
+    private FlexTable addUserFlexTable;
+    private ListBox listBoxMarque;
+    private TextButton txtbtnEnregistrerAnnonce;
+    private HorizontalPanel horizontalPanelAdd;
+    private CellList<String> cellListEvent;
+    private TextButton txtbtnRejoindre;
+    private Label errorLabel;
+    private Label lblConfirmePassword;
+    private DateBox dateBoxDateDeNaissance;
+    private TextButton txtbtnEnregistrerUtilisateur;
+    private ListBox listBox;
 
-    private FlexTable flexTable = new FlexTable();
+
+    /* My autobean factory */
+    private EntityFactory factory = GWT.create(EntityFactory.class);
+
+
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
 
-        flexTable.insertRow(HeaderRowIndex);
-        flexTable.getRowFormatter().addStyleName(HeaderRowIndex,"FlexTable-Header");
+        // Add the nameField and sendButton to the RootPanel
+        // Use RootPanel.get() to get the entire body element
+        RootPanel rootPanel = RootPanel.get("nameFieldContainer");
+        rootPanel.setWidth("100%");
+        errorLabel = new Label();
+        rootPanel.add(errorLabel);
 
-        addColumn("Objects");
-        addColumn("Actions");
+        VerticalPanel verticalPanel = new VerticalPanel();
+        rootPanel.add(verticalPanel);
+        verticalPanel.setWidth("100%");
+        verticalPanel.setSpacing(10);
 
+        horizontalPanelAdd = new HorizontalPanel();
+        horizontalPanelAdd.setVisible(false);
 
-        for (int row = 0; row < rowData.length; row++) {
-            addRow(rowData[row]);
+        HorizontalPanel horizontalPanel = new HorizontalPanel();
+        verticalPanel.add(horizontalPanel);
+        horizontalPanel.setSize("100%", "");
 
-        }
+        loginFlexTable = new FlexTable();
+        horizontalPanel.add(loginFlexTable);
+        loginFlexTable.setCellPadding(5);
+        loginFlexTable.setSize("60%", "");
 
-        applyDataRowStyles();
+        txtbxUsername = new TextBox();
+        txtbxUsername.setText("Username");
+        loginFlexTable.setWidget(0, 1, txtbxUsername);
+        txtbxUsername.setWidth("90%");
 
-        flexTable.setCellSpacing(0);
-        flexTable.addStyleName("FlexTable");
+        Label usernameLabel = new Label("Username");
+        loginFlexTable.setWidget(1, 0, usernameLabel);
 
-        RootPanel.get("container").add(flexTable);
+        Label lblPasswordlabel = new Label("Password");
+        loginFlexTable.setWidget(0, 0, lblPasswordlabel);
 
+        pswrdtxtbxPassword = new PasswordTextBox();
+        pswrdtxtbxPassword.setText("Password");
+        loginFlexTable.setWidget(1, 1, pswrdtxtbxPassword);
+        pswrdtxtbxPassword.setWidth("90%");
 
-        Button b = new Button("Go!", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                Window.alert("How high?");
+        txtbtnLogin = new TextButton("Login");
+        txtbtnLogin.addClickHandler(this);
+        loginFlexTable.setWidget(2, 1, txtbtnLogin);
+        loginFlexTable.getCellFormatter().setHorizontalAlignment(2, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        loginFlexTable.getCellFormatter().setHorizontalAlignment(1, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        loginFlexTable.getCellFormatter().setHorizontalAlignment(0, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+
+        txtbtnRejoindre = new TextButton("Rejoindre");
+        horizontalPanel.add(txtbtnRejoindre);
+
+        ScrollPanel scrollPanel = new ScrollPanel();
+
+        // Create a cell to render each value in the list.
+        TextCell textCell = new TextCell();
+
+        // Create a CellList that uses the cell.
+        cellListEvent = new CellList<String>(textCell);
+
+        // Set the total row count. This isn't strictly necessary, but it affects
+        // paging calculations, so its good habit to keep the row count up to date.
+        cellListEvent.setRowCount(DAYS.size(), true);
+
+        // Push the data into the widget.
+        cellListEvent.setRowData(0, DAYS);
+
+        this.cellListEvent.setKeyboardPagingPolicy(KeyboardPagingPolicy.CURRENT_PAGE);
+        scrollPanel.setWidget(this.cellListEvent);
+        this.cellListEvent.setSize("", "");
+
+        horizontalPanel.add(scrollPanel);
+        scrollPanel.setSize("50", "");
+
+        horizontalPanelAdd.setSpacing(5);
+        verticalPanel.add(horizontalPanelAdd);
+        horizontalPanelAdd.setWidth("100%");
+
+        addUserFlexTable = new FlexTable();
+        horizontalPanelAdd.add(addUserFlexTable);
+        addUserFlexTable.setWidth("100%");
+        addUserFlexTable.setCellPadding(5);
+
+        Label lblPasEncoreMembre = new Label(
+                "Pas encore membre? Inscrivez-vous.");
+        addUserFlexTable.setWidget(0, 0, lblPasEncoreMembre);
+
+        Label lblCivilit = new Label("Civilit\u00E9");
+        addUserFlexTable.setWidget(1, 0, lblCivilit);
+
+        listBox = new ListBox();
+        listBox.addItem("Monsieur", "Mr");
+        listBox.addItem("Madame", "Mme");
+        listBox.addItem("Mademoiselle", "Mlle");
+        addUserFlexTable.setWidget(1, 1, listBox);
+        addUserFlexTable.getCellFormatter().setWidth(1, 1, "60%");
+        listBox.setSize("95%", "26px");
+        listBox.setVisibleItemCount(1);
+
+        Label lblNom = new Label("Nom");
+        addUserFlexTable.setWidget(2, 0, lblNom);
+
+        txtbxNom = new TextBox();
+        txtbxNom.setText("Nom");
+        addUserFlexTable.setWidget(2, 1, txtbxNom);
+        addUserFlexTable.getCellFormatter().setWidth(2, 1, "40%");
+        txtbxNom.setWidth("90%");
+
+        Label lblPrnom = new Label("Pr\u00E9nom");
+        addUserFlexTable.setWidget(3, 0, lblPrnom);
+
+        txtbxPrnom = new TextBox();
+        txtbxPrnom.setText("Pr\u00E9nom");
+        addUserFlexTable.setWidget(3, 1, txtbxPrnom);
+        addUserFlexTable.getCellFormatter().setWidth(3, 1, "90%");
+        txtbxPrnom.setWidth("90%");
+
+        Label lblPseudo = new Label("Pseudo");
+        addUserFlexTable.setWidget(4, 0, lblPseudo);
+
+        txtbxPseudo = new TextBox();
+        txtbxPseudo.setText("Pseudo");
+        addUserFlexTable.setWidget(4, 1, txtbxPseudo);
+        addUserFlexTable.getCellFormatter().setWidth(4, 1, "40%");
+        txtbxPseudo.setWidth("90%");
+
+        Label lblEmail = new Label("Email");
+        addUserFlexTable.setWidget(5, 0, lblEmail);
+
+        txtbxEmail = new TextBox();
+        txtbxEmail.setText("Email");
+        addUserFlexTable.setWidget(5, 1, txtbxEmail);
+        addUserFlexTable.getCellFormatter().setWidth(5, 1, "90%");
+        txtbxEmail.setWidth("90%");
+
+        Label lblPassword = new Label("Password");
+        addUserFlexTable.setWidget(6, 0, lblPassword);
+
+        pswrdtxtbxPassword_add = new PasswordTextBox();
+        pswrdtxtbxPassword_add.setText("Password");
+        addUserFlexTable.setWidget(6, 1, pswrdtxtbxPassword_add);
+        addUserFlexTable.getCellFormatter().setWidth(6, 1, "60%");
+        pswrdtxtbxPassword_add.setWidth("90%");
+
+        lblConfirmePassword = new Label("Confirm Password");
+        addUserFlexTable.setWidget(7, 0, lblConfirmePassword);
+        addUserFlexTable.getCellFormatter().setWidth(7, 0, "50%");
+
+        pswrdtxtbxConfirmePassword = new PasswordTextBox();
+        pswrdtxtbxConfirmePassword.setText("Confirme password");
+        addUserFlexTable.setWidget(7, 1, pswrdtxtbxConfirmePassword);
+        addUserFlexTable.getCellFormatter().setWidth(7, 1, "60%");
+        pswrdtxtbxConfirmePassword.setWidth("90%");
+        addUserFlexTable.getCellFormatter().setHorizontalAlignment(2, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addUserFlexTable.getCellFormatter().setHorizontalAlignment(3, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addUserFlexTable.getCellFormatter().setHorizontalAlignment(4, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addUserFlexTable.getCellFormatter().setHorizontalAlignment(5, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addUserFlexTable.getCellFormatter().setHorizontalAlignment(6, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addUserFlexTable.getCellFormatter().setHorizontalAlignment(7, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+
+        Label lblDateDeNaissance = new Label("Date de naissance");
+        addUserFlexTable.setWidget(8, 0, lblDateDeNaissance);
+
+        dateBoxDateDeNaissance = new DateBox();
+        dateBoxDateDeNaissance.setFormat(new DefaultFormat(DateTimeFormat
+                .getFormat("EE dd-MM-yyyy")));
+        addUserFlexTable.setWidget(8, 1, dateBoxDateDeNaissance);
+        addUserFlexTable.getCellFormatter().setWidth(8, 1, "90%");
+        dateBoxDateDeNaissance.setWidth("90%");
+        addUserFlexTable.getCellFormatter().setHorizontalAlignment(8, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addUserFlexTable.getCellFormatter().setHorizontalAlignment(1, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addUserFlexTable.getFlexCellFormatter().setColSpan(0, 0, 2);
+
+        txtbtnEnregistrerUtilisateur = new TextButton(
+                "Enregistrer utilisateur");
+        txtbtnEnregistrerUtilisateur.addClickHandler(this);
+        addUserFlexTable.setWidget(9, 0, txtbtnEnregistrerUtilisateur);
+        addUserFlexTable.getFlexCellFormatter().setColSpan(9, 0, 2);
+        addUserFlexTable.getCellFormatter().setHorizontalAlignment(9, 0,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+
+        addVoitureFlexTable = new FlexTable();
+        horizontalPanelAdd.add(addVoitureFlexTable);
+        addVoitureFlexTable.setCellPadding(5);
+        addVoitureFlexTable.setWidth("240px");
+
+        Label lblVotreVhicule = new Label("Votre v\u00E9hicule");
+        addVoitureFlexTable.setWidget(0, 0, lblVotreVhicule);
+        lblVotreVhicule.setWidth("100%");
+
+        Label lblMarque = new Label("Marque");
+        addVoitureFlexTable.setWidget(1, 0, lblMarque);
+
+        listBoxMarque = new ListBox();
+        addVoitureFlexTable.setWidget(1, 1, listBoxMarque);
+        addVoitureFlexTable.getCellFormatter().setWidth(1, 1, "50%");
+        listBoxMarque.setWidth("90%");
+        listBoxMarque.setVisibleItemCount(1);
+        addVoitureFlexTable.getCellFormatter().setHorizontalAlignment(1, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addVoitureFlexTable.getFlexCellFormatter().setColSpan(0, 0, 2);
+
+        Label lblModle = new Label("Mod\u00E8le");
+        addVoitureFlexTable.setWidget(2, 0, lblModle);
+
+        ListBox listBox_1 = new ListBox();
+        listBox_1.setVisibleItemCount(1);
+        addVoitureFlexTable.setWidget(2, 1, listBox_1);
+        listBox_1.setWidth("90%");
+
+        Label lblConfort = new Label("Confort");
+        addVoitureFlexTable.setWidget(3, 0, lblConfort);
+
+        ListBox listBox_2 = new ListBox();
+        listBox_2.setVisibleItemCount(1);
+        addVoitureFlexTable.setWidget(3, 1, listBox_2);
+        listBox_2.setWidth("90%");
+
+        Label lblNombreDePlaces = new Label("Nombre de places");
+        addVoitureFlexTable.setWidget(4, 0, lblNombreDePlaces);
+
+        ListBox listBox_3 = new ListBox();
+        listBox_3.setVisibleItemCount(1);
+        addVoitureFlexTable.setWidget(4, 1, listBox_3);
+        listBox_3.setWidth("90%");
+
+        Label lblCatgorie = new Label("Cat\u00E9gorie");
+        addVoitureFlexTable.setWidget(5, 0, lblCatgorie);
+
+        ListBox listBox_4 = new ListBox();
+        listBox_4.setVisibleItemCount(1);
+        addVoitureFlexTable.setWidget(5, 1, listBox_4);
+        listBox_4.setWidth("90%");
+
+        Label lblCouleur = new Label("Couleur");
+        addVoitureFlexTable.setWidget(6, 0, lblCouleur);
+        addVoitureFlexTable.getCellFormatter().setHorizontalAlignment(2, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addVoitureFlexTable.getCellFormatter().setHorizontalAlignment(3, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addVoitureFlexTable.getCellFormatter().setHorizontalAlignment(4, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+        addVoitureFlexTable.getCellFormatter().setHorizontalAlignment(5, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+
+        ListBox listBox_5 = new ListBox();
+        listBox_5.setVisibleItemCount(1);
+        addVoitureFlexTable.setWidget(6, 1, listBox_5);
+        listBox_5.setWidth("90%");
+        addVoitureFlexTable.getCellFormatter().setHorizontalAlignment(6, 1,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+
+        TextButton txtbtnEnregistrerVhicule = new TextButton(
+                "Enregistrer v\u00E9hicule");
+        addVoitureFlexTable.setWidget(7, 0, txtbtnEnregistrerVhicule);
+        addVoitureFlexTable.getFlexCellFormatter().setColSpan(7, 0, 2);
+        addVoitureFlexTable.getCellFormatter().setHorizontalAlignment(7, 0,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+
+        addEventFlexTable = new FlexTable();
+        horizontalPanelAdd.add(addEventFlexTable);
+        addEventFlexTable.setCellPadding(5);
+        addEventFlexTable.setWidth("100%");
+
+        Label lblPublierUneAnnonce = new Label("Publier une annonce");
+        addEventFlexTable.setWidget(0, 0, lblPublierUneAnnonce);
+
+        Label lblDate = new Label("Date");
+        addEventFlexTable.setWidget(1, 0, lblDate);
+
+        dateDateBox = new DateBox();
+        dateDateBox.setFormat(new DefaultFormat(DateTimeFormat
+                .getFormat("EE dd-MM-yyyy")));
+        addEventFlexTable.setWidget(1, 1, dateDateBox);
+        dateDateBox.setWidth("100%");
+
+        Label lblVilleDeDpart = new Label("Ville de d\u00E9part");
+        addEventFlexTable.setWidget(2, 0, lblVilleDeDpart);
+        lblVilleDeDpart.setWidth("100%");
+
+        TextBox txtbxCodePostalDepart = new TextBox();
+        txtbxCodePostalDepart.setText("Code postal");
+        addEventFlexTable.setWidget(3, 0, txtbxCodePostalDepart);
+        txtbxCodePostalDepart.setWidth("100%");
+
+        txtbxCommuneDepart = new TextBox();
+        txtbxCommuneDepart.setText("Commune");
+        addEventFlexTable.setWidget(3, 1, txtbxCommuneDepart);
+        txtbxCommuneDepart.setWidth("100%");
+
+        Label lblVilleDarrive = new Label("Ville d'arriv\u00E9e");
+        addEventFlexTable.setWidget(4, 0, lblVilleDarrive);
+        lblVilleDarrive.setWidth("100%");
+
+        txtbxCodePostalArrivee = new TextBox();
+        txtbxCodePostalArrivee.setText("Code postal");
+        addEventFlexTable.setWidget(5, 0, txtbxCodePostalArrivee);
+        addEventFlexTable.getCellFormatter().setWidth(5, 0, "");
+        txtbxCodePostalArrivee.setWidth("100%");
+
+        txtbxCommuneArriveer = new TextBox();
+        txtbxCommuneArriveer.setText("Commune");
+        addEventFlexTable.setWidget(5, 1, txtbxCommuneArriveer);
+        txtbxCommuneArriveer.setWidth("100%");
+        addEventFlexTable.getFlexCellFormatter().setColSpan(2, 0, 2);
+        addEventFlexTable.getFlexCellFormatter().setColSpan(4, 0, 2);
+        addEventFlexTable.getFlexCellFormatter().setColSpan(0, 0, 2);
+
+        txtbtnEnregistrerAnnonce = new TextButton("Enregistrer annonce");
+        addEventFlexTable.setWidget(6, 0, txtbtnEnregistrerAnnonce);
+        addEventFlexTable.getFlexCellFormatter().setColSpan(6, 0, 2);
+        addEventFlexTable.getCellFormatter().setHorizontalAlignment(6, 0,
+                HasHorizontalAlignment.ALIGN_RIGHT);
+
+    }
+
+    @Override
+    public void onClick(ClickEvent clickEvent) {
+        if (clickEvent.getSource() == txtbtnLogin) {
+            StringBuffer loginData = new StringBuffer();
+            loginData.append(URL.encode("username")).append("=").append(URL.encode(txtbxUsername.getValue()));
+            loginData.append(URL.encode("&password")).append("=").append(URL.encode(/*passwordTextBox.getValue()*/"password"));
+
+            RequestBuilder loginRequestBuilder = new RequestBuilder(RequestBuilder.POST, GWT.getHostPageBaseURL() + "rest/user/login");
+            loginRequestBuilder.setHeader("Content-type", "application/x-www-form-urlencoded");
+            try {
+                loginRequestBuilder.sendRequest(loginData.toString(), new RequestCallback() {
+                    @Override
+                    public void onResponseReceived(Request request, Response response) {
+                        IPerson user = EntityJsonConverter.getInstance().deserializeFromJson(response.getText());
+                        System.out.println("user\t"+user);
+                        Window.alert("Bonjour " + user.getPrenom() + " " + user.getNom());
+                        horizontalPanelAdd.setVisible(true);
+                        loginFlexTable.setVisible(false);
+                    }
+
+                    @Override
+                    public void onError(Request request, Throwable throwable) {
+                        Window.alert(throwable.getMessage());
+                    }
+                });
+            } catch (RequestException e) {
+                e.printStackTrace();
             }
-        });
-
-        // Add it to the root panel.
-        RootPanel.get("container").add(b);
-
-
-        if (true) {
-            // Make a new list box, adding a few items to it.
-            ListBox lb = new ListBox();
-            lb.addItem("foo");
-            lb.addItem("bar");
-            lb.addItem("baz");
-            lb.addItem("toto");
-            lb.addItem("tintin");
-
-            // Make enough room for all five items (setting this value to 1 turns it
-            // into a drop-down list).
-            lb.setVisibleItemCount(1);
-
-            // Add it to the root panel.
-            RootPanel.get("container").add(lb);
-
         }
-
-
-        FlowPanel fp = new FlowPanel();
-
-        fp.setStyleName("center");
-        RootPanel.get().add(fp);
-
-
-    }
-
-    private void addColumn(Object columnHeading) {
-        Widget widget = createCellWidget(columnHeading);
-        int cell = flexTable.getCellCount(HeaderRowIndex);
-
-        widget.setWidth("100%");
-        widget.addStyleName("FlexTable-ColumnLabel");
-
-        flexTable.setWidget(HeaderRowIndex, cell, widget);
-
-        flexTable.getCellFormatter().addStyleName(
-                HeaderRowIndex, cell, "FlexTable-ColumnLabelCell");
-    }
-
-    private Widget createCellWidget(Object cellObject) {
-        Widget widget = null;
-
-        if (cellObject instanceof Widget)
-            widget = (Widget) cellObject;
-        else
-            widget = new Label(cellObject.toString());
-
-        return widget;
-    }
-
-    int rowIndex = 1;
-
-    private void addRow(Object[] cellObjects) {
-
-        for (int cell = 0; cell < cellObjects.length; cell++) {
-            Widget widget = createCellWidget(cellObjects[cell]);
-            flexTable.setWidget(rowIndex, cell, widget);
-            flexTable.getCellFormatter().addStyleName(rowIndex, cell, "FlexTable-Cell");
-        }
-        rowIndex++;
-    }
-
-    private void applyDataRowStyles() {
-        HTMLTable.RowFormatter rf = flexTable.getRowFormatter();
-
-        for (int row = 1; row < flexTable.getRowCount(); ++row) {
-            if ((row % 2) != 0) {
-                rf.addStyleName(row, "FlexTable-OddRow");
+        if (clickEvent.getSource() == txtbtnEnregistrerUtilisateur) {
+            IPerson user = EntityJsonConverter.getInstance().makeUser();
+            String errors = "Remplir les champs ci-dessous\n";
+            String nom = txtbxNom.getValue();
+            String prenom = txtbxPrnom.getValue();
+            String email = txtbxEmail.getValue();
+            final String username = txtbxPseudo.getValue();
+            String password = pswrdtxtbxPassword_add.getValue();
+            String confirmPassword = pswrdtxtbxConfirmePassword.getValue();
+            Date dateNaissance = dateBoxDateDeNaissance.getValue();
+            String civilite = listBox.getValue(listBox.getSelectedIndex());
+            if (nom != null) {
+                user.setNom(nom);
             } else {
-                rf.addStyleName(row, "FlexTable-EvenRow");
+                errors += "Le nom est obligatoire\n";
+            }
+            if (prenom != null) {
+                user.setPrenom(prenom);
+            } else {
+                errors += "Le prénom est obligatoire\n";
+            }
+            if (email != null) {
+                user.setEmail(email);
+            } else {
+                errors += "L'email est obligatoire\n";
+            }
+            if (username != null) {
+                user.setUsername(username);
+            } else {
+                errors += "Le username est obligatoire\n";
+            }
+            if (password != null && password.equals(confirmPassword)) {
+                user.setPassword(password);
+            } else {
+                errors += "Les mots de pass sont différents\n";
+            }
+            if (dateNaissance != null) {
+                user.setDateDeNaissance(dateNaissance);
+            }
+            if (civilite != null) {
+                user.setCivilite(civilite);
+            }
+            String userJson = EntityJsonConverter.getInstance().serializeToJson(user);
+
+            System.out.println("User Client  " + user.toString());
+            if (!errors.equals("Remplir les champs ci-dessous\n")) {
+                Window.alert(errors);
+            } else {
+
+                Window.alert("User -----  " + user.toString() + "\n" + userJson);
+                RequestBuilder userRequestBuilder = new RequestBuilder(RequestBuilder.POST, GWT.getHostPageBaseURL() + "rest/user/create");
+                userRequestBuilder.setHeader("Content-type", MediaType.APPLICATION_JSON);
+                System.out.println("USER +++++++++++ " + userJson);
+                errorLabel.setText(userJson);
+                try {
+                    userRequestBuilder.setRequestData(userJson);
+                    userRequestBuilder.sendRequest(userJson, new RequestCallback() {
+                        @Override
+                        public void onResponseReceived(Request request, Response response) {
+                            Window.alert("L'utilisateur " + username + " a bien été ajouté.\n" + response.getText());
+                        }
+
+                        @Override
+                        public void onError(Request request, Throwable throwable) {
+                            Window.alert(throwable.getMessage());
+                        }
+                    });
+                } catch (RequestException e) {
+                    e.printStackTrace();
+                }
             }
         }
-    }
-
-
-    private List<String> afficherList(String type) {
-        List<String> entity = new ArrayList<String>();
-
-        entity.add("Personne");
-        entity.add("Voiture");
-        entity.add("Ville");
-        entity.add("Avis");
-        entity.add("Preference");
-        entity.add("Evenement");
-
-        List<String> values = new ArrayList<String>();
-
-        if (entity.contains(type)) {
-            values.add("List des XXXX");
-            //utilisation du travail de mamadou
-        } else {
-            values.add("Aucun");
-        }
-        return values;
     }
 }
-

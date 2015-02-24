@@ -2,24 +2,22 @@ package fr.istic.m2gla.server.services;
 
 import fr.istic.m2gla.server.dao.IPersonDAO;
 import fr.istic.m2gla.server.dao.PersonDAOImpl;
-import fr.istic.m2gla.shared.Event;
 import fr.istic.m2gla.shared.Person;
 import org.apache.log4j.Logger;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by mds on 10/11/14.
  */
 @Path("/user")
 public class PersonServiceImpl implements IPersonService {
-    private EntityManager em;
     static Logger log = Logger.getLogger(
             PersonServiceImpl.class.getName());
 
@@ -28,38 +26,6 @@ public class PersonServiceImpl implements IPersonService {
 
     public PersonServiceImpl() {
         personIDao = new PersonDAOImpl(Person.class);
-    }
-
-    @Override
-    @Path("addEvent/{id}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    @POST
-    public Person createAnEvent(@PathParam("id") long id, Event event) {
-        Person person = findById(id);
-        if (person != null) {
-            EntityTransaction t = em.getTransaction();
-            try {
-                t.begin();
-                em.persist(event);
-                person.addEvent(event);
-                em.merge(person);
-                t.commit();
-            } catch (Exception e) {
-                System.out.println("error persist commande" + e.toString());
-            }
-        }
-        return person;
-    }
-
-    @Override
-    @Path("events/owner={id}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    @GET
-    public List<Event> myEvents(@PathParam("id") long id) {
-        Person person = personIDao.findById(id);
-        return person.getMyEvents();
     }
 
     @Override
@@ -83,37 +49,29 @@ public class PersonServiceImpl implements IPersonService {
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("create")
-    public void create(Person entity) {
+    public String create(Person entity) {
         System.out.println("Create de AbstractDAO : " + entity.getClass().toString());
+        String message = "SUCCES";
+        Person person = personIDao.findBbyEmail(entity.getEmail());
+        if (person != null) {
+            Exception e = new PersistenceException("Email exists");
+            return e.getMessage();
+        }
+        person = personIDao.findByUsername(entity.getUsername());
+        if (person != null) {
+            Exception e = new PersistenceException("Username exists");
+            return e.getMessage();
+        }
+        System.out.println("USER ==== " + entity.toString());
         personIDao.create(entity);
-//        if (entity == null)
-//            throw new PersistenceException("Entity to persist may not be null");//throw Persistence exception
-//        EntityTransaction t = em.getTransaction();
-//        try {
-//            t.begin();
-//            System.err.println("BEFORE INSERT");
-//            em.persist(entity);
-//            System.err.println("AFTER INSERT");
-//            t.commit();
-//        } catch (Exception e) {
-//            System.out.println("error persist commande" + e.toString());
-//        }
+        return message;
     }
 
     @Override
     @GET
     @Path("delete/{id}")
     public void delete(@PathParam("id") long id) {
-        Person result = null;
-        if (id < 0 || id < 1) {
-            throw new PersistenceException("Id may not be null or negative");
-        }
-        result = em.find(Person.class, id);
-
-        EntityTransaction t = em.getTransaction();
-        t.begin();
-        em.remove(result);
-        t.commit();
+        personIDao.delete(id);
     }
 
     @Override
@@ -123,5 +81,33 @@ public class PersonServiceImpl implements IPersonService {
     @Path("update")
     public Person update(Person entity) {
         return personIDao.update(entity);
+    }
+
+    @Override
+    @POST
+    @Consumes("application/x-www-form-urlencoded")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/login")
+    public Person login(@FormParam("username") String username, @FormParam("password") String password) {
+        Person user = personIDao.findByUsername(username);//personIDao.findByLogger(username, password);
+        System.out.println("user------"+user);
+        return user;
+    }
+
+    @Override
+    @Path("profile")
+    @Produces({MediaType.APPLICATION_JSON})
+    @GET
+    public Response userProfile(@CookieParam("username") Cookie username) {
+        if (username == null) {
+            return Response.serverError().entity("ERROR").build();
+        } else {
+            Person user = personIDao.findByUsername(username.getValue());
+            String url = "Error";
+            if (user != null) {
+                url = "event/owner=" + user.getId();
+            }
+            return Response.seeOther(URI.create(url)).build();
+        }
     }
 }

@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
  * @generated
  */
 @Entity
-public class Avis {
+public class Avis implements IAvis {
     @Id
     @GeneratedValue
     public long getId() {
@@ -24,18 +24,22 @@ public class Avis {
         this.id = id;
     }
 
+    @Override
     public String getCommentaire() {
         return commentaire;
     }
 
+    @Override
     public void setCommentaire(String commentaire) {
         this.commentaire = commentaire;
     }
 
+    @Override
     public int getNote() {
         return note;
     }
 
+    @Override
     public void setNote(int note) {
         this.note = note;
     }
@@ -76,11 +80,13 @@ public class Avis {
      *
      * @return
      */
+    @Override
     @ManyToOne
     public Person getPerson() {
         return person;
     }
 
+    @Override
     public void setPerson(Person person) {
         this.person = person;
     }

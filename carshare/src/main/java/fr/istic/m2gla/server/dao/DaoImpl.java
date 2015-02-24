@@ -1,5 +1,8 @@
 package fr.istic.m2gla.server.dao;
 
+import fr.istic.m2gla.shared.Person;
+import org.hibernate.exception.ConstraintViolationException;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
@@ -45,14 +48,25 @@ public class DaoImpl<T> implements IDao<T> {
             t.begin();
             em.persist(entity);
             t.commit();
+        } catch (ConstraintViolationException e) {
+            System.out.println("Constraint violation " + e.getConstraintName() + "  " + e.getMessage());
         } catch (Exception e) {
             System.out.println("error persist commande" + e.toString());
         }
     }
 
     @Override
-    public void delete(long entity) {
+    public void delete(long id) {
+        Person result = null;
+        if (id < 0 || id < 1) {
+            throw new PersistenceException("Id may not be null or negative");
+        }
+        result = em.find(Person.class, id);
 
+        EntityTransaction t = em.getTransaction();
+        t.begin();
+        em.remove(result);
+        t.commit();
     }
 
     @Override
