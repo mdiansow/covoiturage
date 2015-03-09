@@ -5,6 +5,7 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 import fr.istic.m2gla.shared.EntityFactory;
+import fr.istic.m2gla.shared.IEvent;
 import fr.istic.m2gla.shared.IPerson;
 
 public class EntityJsonConverter {
@@ -23,19 +24,41 @@ public class EntityJsonConverter {
         // Construct the AutoBean
         AutoBean<IPerson> user = factory.user();
 
-        // Return the Book interface shim
+        // Return the Person interface shim
         return user.as();
     }
 
-    String serializeToJson(IPerson user) {
+    public IEvent makeEvent(){
+        // Construct the AutoBean
+        AutoBean<IEvent> event = factory.event();
+
+        // Return the event interface shim
+        return event.as();
+    }
+
+    // Person
+    String serializeUserToJson(IPerson user) {
         // Retrieve the AutoBean controller
         AutoBean<IPerson> bean = AutoBeanUtils.getAutoBean(user);
 
         return AutoBeanCodex.encode(bean).getPayload();
     }
 
-    IPerson deserializeFromJson(String json) {
+    IPerson deserializeUserFromJson(String json) {
         AutoBean<IPerson> bean = AutoBeanCodex.decode(factory, IPerson.class, json);
+        return bean.as();
+    }
+
+    // Event
+    String serializeEventToJson(IEvent event) {
+        // Retrieve the AutoBean controller
+        AutoBean<IEvent> bean = AutoBeanUtils.getAutoBean(event);
+
+        return AutoBeanCodex.encode(bean).getPayload();
+    }
+
+    IEvent deserializeEventFromJson(String json) {
+        AutoBean<IEvent> bean = AutoBeanCodex.decode(factory, IEvent.class, json);
         return bean.as();
     }
 

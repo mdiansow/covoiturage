@@ -1,0 +1,123 @@
+<div class="top-buffer">
+    <button class="btn btn-success" ng-click="editUser('new')">
+        <span class="glyphicon glyphicon-user"></span>  Create New User
+    </button>
+    <hr>
+
+    <h3 ng-show="edit">Create New User:</h3>
+
+    <h3 ng-hide="edit">Edit User:</h3>
+
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Civilité:</label>
+
+            <div class="col-sm-10">
+                <select name="civilite" ng-model="user.civilite" ng-disabled="!edit" placeholder="Civilité">
+                    <option value="mme">Madame</option>
+                    <option value="mlle">Mademoiselle</option>
+                    <option value="mr">Monsieur</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">First Name:</label>
+
+            <div class="col-sm-10">
+                <input type="text" name="prenom" ng-model="user.prenom" ng-disabled="!edit" placeholder="First Name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Last Name:</label>
+
+            <div class="col-sm-10">
+                <input type="text" ng-model="user.nom" name="nom" ng-disabled="!edit" placeholder="Last Name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Birth day:</label>
+
+            <div class="col-sm-10">
+                <input type="date" ng-model="user.dateDeNaissance" ng-disabled="!edit" placeholder="dd/mm/yyyy">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Pseudo:</label>
+
+            <div class="col-sm-10">
+                <input type="text" ng-model="user.username" placeholder="Pseudo">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Email:</label>
+
+            <div class="col-sm-10">
+                <input type="text" ng-model="user.email" placeholder="Email">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Password:</label>
+
+            <div class="col-sm-10">
+                <input type="password" ng-model="user.password" placeholder="Password">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Repeat:</label>
+
+            <div class="col-sm-10">
+                <input type="password" ng-model="passw2" placeholder="Repeat Password">
+            </div>
+        </div>
+        <hr>
+        <h3>Ville de résidence:</h3>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Commune:</label>
+
+            <div class="col-sm-10">
+                <input type="text" ng-model="commune" placeholder="Commune">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Code postal:</label>
+
+            <div class="col-sm-10">
+                <input type="text" ng-model="cp" placeholder="Code postal">
+            </div>
+        </div>
+        <hr>
+        <h3>Add car</h3>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Marque:</label>
+
+            <div class="col-sm-10">
+                <input type="text" ng-model="marque" placeholder="Marque">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Modèle:</label>
+
+            <div class="col-sm-10">
+                <input type="text" ng-model="model" placeholder="Modèle">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Confort:</label>
+
+            <div class="col-sm-10">
+                <input type="text" ng-model="confort" placeholder="Confort">
+            </div>
+        </div>
+        <div ng-hide="" class="form-group">
+            <label class="col-sm-2 control-label">Nb. places:</label>
+
+            <div class="col-sm-10">
+                <input type="number" min="0" step="1" ng-model="nbPlaces" placeholder="Nombre de places">
+            </div>
+        </div>
+    </form>
+
+    <hr>
+</div>

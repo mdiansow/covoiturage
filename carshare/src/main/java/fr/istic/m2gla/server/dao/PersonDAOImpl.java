@@ -30,7 +30,7 @@ public class PersonDAOImpl extends DaoImpl<Person> implements IPersonDAO {
                     .setParameter("password", password)
                     .getSingleResult();
         } catch (NoResultException e) {
-
+            e.printStackTrace();
         }
         return person;
     }
@@ -44,8 +44,9 @@ public class PersonDAOImpl extends DaoImpl<Person> implements IPersonDAO {
                     .setParameter("username", username)
                     .getSingleResult();
         } catch (NoResultException e) {
-
+            e.printStackTrace();
         }
+        System.out.println("Username \t" + person.getUsername());
         return person;
     }
 
@@ -58,7 +59,7 @@ public class PersonDAOImpl extends DaoImpl<Person> implements IPersonDAO {
                     .setParameter("email", email)
                     .getSingleResult();
         } catch (NoResultException e) {
-
+            e.printStackTrace();
         }
         return person;
     }

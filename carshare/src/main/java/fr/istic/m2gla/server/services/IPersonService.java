@@ -38,9 +38,8 @@ public interface IPersonService {
 
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    @Produces({MediaType.APPLICATION_JSON})
     @Path("/login")
-    Person login(@FormParam("username") String username, @FormParam("password") String password);
+    Response login(@FormParam("username") String username, @FormParam("password") String password);
 
     @Path("profile")
     @Produces({MediaType.APPLICATION_JSON})

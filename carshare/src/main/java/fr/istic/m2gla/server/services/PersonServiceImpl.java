@@ -6,10 +6,11 @@ import fr.istic.m2gla.shared.Person;
 import org.apache.log4j.Logger;
 
 import javax.persistence.PersistenceException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.net.URI;
 import java.util.Collection;
 
@@ -21,6 +22,10 @@ public class PersonServiceImpl implements IPersonService {
     static Logger log = Logger.getLogger(
             PersonServiceImpl.class.getName());
 
+    @Context
+    private HttpServletRequest request;
+    @Context
+    private HttpServletResponse response;
 
     private IPersonDAO personIDao;
 
@@ -51,7 +56,7 @@ public class PersonServiceImpl implements IPersonService {
     @Path("create")
     public String create(Person entity) {
         System.out.println("Create de AbstractDAO : " + entity.getClass().toString());
-        String message = "SUCCES";
+        String message = "SUCCESS";
         Person person = personIDao.findBbyEmail(entity.getEmail());
         if (person != null) {
             Exception e = new PersistenceException("Email exists");
@@ -86,12 +91,19 @@ public class PersonServiceImpl implements IPersonService {
     @Override
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    @Produces({MediaType.APPLICATION_JSON})
+//    @Produces({MediaType.APPLICATION_JSON})
     @Path("/login")
-    public Person login(@FormParam("username") String username, @FormParam("password") String password) {
+    public Response login(@FormParam("username") String username, @FormParam("password") String password) {
+        System.out.println("Services \t" + username);
         Person user = personIDao.findByUsername(username);//personIDao.findByLogger(username, password);
-        System.out.println("user------"+user);
-        return user;
+        if (user != null) {
+            HttpSession session = request.getSession(true);
+            session.setAttribute("username", user.getUsername());
+            return Response.ok().header("username", user.getUsername()).build();
+        } else {
+            System.out.println("user------" + user);
+            return Response.serverError().build();
+        }
     }
 
     @Override

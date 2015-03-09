@@ -1,14 +1,17 @@
 package fr.istic.m2gla.client;
 
-import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.*;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.cellview.client.CellList;
-import com.google.gwt.user.cellview.client.HasKeyboardPagingPolicy.KeyboardPagingPolicy;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.datepicker.client.DateBox;
@@ -18,6 +21,7 @@ import fr.istic.m2gla.shared.EntityFactory;
 import fr.istic.m2gla.shared.IPerson;
 
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -59,7 +63,7 @@ public class Carshare implements EntryPoint, ClickHandler {
     private ListBox listBoxMarque;
     private TextButton txtbtnEnregistrerAnnonce;
     private HorizontalPanel horizontalPanelAdd;
-    private CellList<String> cellListEvent;
+    private CellTable<IPerson> tableEvent;
     private TextButton txtbtnRejoindre;
     private Label errorLabel;
     private Label lblConfirmePassword;
@@ -70,6 +74,8 @@ public class Carshare implements EntryPoint, ClickHandler {
 
     /* My autobean factory */
     private EntityFactory factory = GWT.create(EntityFactory.class);
+
+    private static List<IPerson> EVENTS = new ArrayList<>();
 
 
     /**
@@ -90,7 +96,6 @@ public class Carshare implements EntryPoint, ClickHandler {
         verticalPanel.setSpacing(10);
 
         horizontalPanelAdd = new HorizontalPanel();
-        horizontalPanelAdd.setVisible(false);
 
         HorizontalPanel horizontalPanel = new HorizontalPanel();
         verticalPanel.add(horizontalPanel);
@@ -132,22 +137,39 @@ public class Carshare implements EntryPoint, ClickHandler {
 
         ScrollPanel scrollPanel = new ScrollPanel();
 
-        // Create a cell to render each value in the list.
-        TextCell textCell = new TextCell();
+        // done
+        // Create a CellTable
+        tableEvent = new CellTable<>();
 
-        // Create a CellList that uses the cell.
-        cellListEvent = new CellList<String>(textCell);
+        //Create date column
+        TextColumn<IPerson> nameColumn = new TextColumn<IPerson>() {
+            @Override
+            public String getValue(IPerson person) {
+                return person.getNom();
+            }
+        };
+        // Create prenom column
+        TextColumn<IPerson> prenomColumn = new TextColumn<IPerson>() {
+            @Override
+            public String getValue(IPerson iPerson) {
+                return iPerson.getPrenom();
+            }
+        };
 
-        // Set the total row count. This isn't strictly necessary, but it affects
-        // paging calculations, so its good habit to keep the row count up to date.
-        cellListEvent.setRowCount(DAYS.size(), true);
+        tableEvent.addColumn(nameColumn, "Nom");
+        tableEvent.addColumn(prenomColumn, "Prénom");
 
-        // Push the data into the widget.
-        cellListEvent.setRowData(0, DAYS);
+        // Set the total row count
+        tableEvent.setRowCount(EVENTS.size());
 
-        this.cellListEvent.setKeyboardPagingPolicy(KeyboardPagingPolicy.CURRENT_PAGE);
-        scrollPanel.setWidget(this.cellListEvent);
-        this.cellListEvent.setSize("", "");
+        // Push the data into the widget
+        tableEvent.setRowData(0, EVENTS);
+
+        scrollPanel.setWidget(this.tableEvent);
+
+        // Affichage de l'ensemble des personnes
+        allPersonsRequest();
+
 
         horizontalPanel.add(scrollPanel);
         scrollPanel.setSize("50", "");
@@ -268,6 +290,7 @@ public class Carshare implements EntryPoint, ClickHandler {
                 HasHorizontalAlignment.ALIGN_RIGHT);
 
         addVoitureFlexTable = new FlexTable();
+        addVoitureFlexTable.setVisible(false);
         horizontalPanelAdd.add(addVoitureFlexTable);
         addVoitureFlexTable.setCellPadding(5);
         addVoitureFlexTable.setWidth("240px");
@@ -346,6 +369,7 @@ public class Carshare implements EntryPoint, ClickHandler {
                 HasHorizontalAlignment.ALIGN_RIGHT);
 
         addEventFlexTable = new FlexTable();
+        addEventFlexTable.setVisible(false);
         horizontalPanelAdd.add(addEventFlexTable);
         addEventFlexTable.setCellPadding(5);
         addEventFlexTable.setWidth("100%");
@@ -402,6 +426,47 @@ public class Carshare implements EntryPoint, ClickHandler {
 
     }
 
+    /**
+     * Récupération des personnes
+     */
+    private void allPersonsRequest() {
+        RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, GWT
+                .getHostPageBaseURL() + "rest/user/");
+        rb.setCallback(new RequestCallback() {
+
+            public void onError(Request request, Throwable exception) {
+                Window.alert(exception.getMessage());
+            }
+
+            public void onResponseReceived(Request request,
+                                           Response response) {
+                String resp = response.getText();
+
+                JSONValue jsonValue = JSONParser.parseStrict(resp);
+
+                JSONArray array;
+                EVENTS = new ArrayList<IPerson>();
+                if ((array = jsonValue.isArray()) != null) {
+                    for (int i = 0; i < array.size(); i++) {
+                        String person = String.valueOf(array.get(i));
+                        IPerson p = (IPerson) EntityJsonConverter.getInstance().deserializeUserFromJson(person);
+                        EVENTS.add(p);
+                        System.out.print("Person \t " + p.getNom());
+                    }
+                }
+                tableEvent.setRowCount(EVENTS.size());
+                tableEvent.setRowData(0, EVENTS);
+                Window.alert("Event :\t" + EVENTS.get(0).getNom() + "\tSize \t" + EVENTS.size());
+            }
+
+        });
+        try {
+            rb.send();
+        } catch (RequestException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onClick(ClickEvent clickEvent) {
         if (clickEvent.getSource() == txtbtnLogin) {
@@ -415,11 +480,15 @@ public class Carshare implements EntryPoint, ClickHandler {
                 loginRequestBuilder.sendRequest(loginData.toString(), new RequestCallback() {
                     @Override
                     public void onResponseReceived(Request request, Response response) {
-                        IPerson user = EntityJsonConverter.getInstance().deserializeFromJson(response.getText());
-                        System.out.println("user\t"+user);
-                        Window.alert("Bonjour " + user.getPrenom() + " " + user.getNom());
-                        horizontalPanelAdd.setVisible(true);
+                        String username = response.getHeader("username");
+//                        IPerson user = EntityJsonConverter.getInstance().deserializeUserFromJson(response.getText());
+                        System.out.println("user\t" + username);
+                        Window.alert("Bonjour " + username);
+                        Cookies.setCookie("username", username);
+                        addVoitureFlexTable.setVisible(true);
+                        addEventFlexTable.setVisible(true);
                         loginFlexTable.setVisible(false);
+                        addUserFlexTable.setVisible(false);
                     }
 
                     @Override
@@ -473,7 +542,7 @@ public class Carshare implements EntryPoint, ClickHandler {
             if (civilite != null) {
                 user.setCivilite(civilite);
             }
-            String userJson = EntityJsonConverter.getInstance().serializeToJson(user);
+            String userJson = EntityJsonConverter.getInstance().serializeUserToJson(user);
 
             System.out.println("User Client  " + user.toString());
             if (!errors.equals("Remplir les champs ci-dessous\n")) {
@@ -490,7 +559,17 @@ public class Carshare implements EntryPoint, ClickHandler {
                     userRequestBuilder.sendRequest(userJson, new RequestCallback() {
                         @Override
                         public void onResponseReceived(Request request, Response response) {
-                            Window.alert("L'utilisateur " + username + " a bien été ajouté.\n" + response.getText());
+                            String message = response.getText();
+                            Window.alert("L'utilisateur " + username + " a bien été ajouté.\n" + message);
+                            if (message.equals("SUCCESS")) ;
+                            {
+                                Cookies.setCookie("username", username);
+                                addVoitureFlexTable.setVisible(true);
+                                loginFlexTable.setVisible(false);
+                                addUserFlexTable.setVisible(false);
+                                addEventFlexTable.setVisible(true);
+                                allPersonsRequest();
+                            }
                         }
 
                         @Override

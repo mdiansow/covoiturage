@@ -1,0 +1,58 @@
+<!doctype html>
+<html ng-app="CarModule">
+
+<head>
+    <script src="./../bower_components/angular/angular.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.1.js"></script>
+    <script src="./../bower_components/angular-route/angular-route.js"></script>
+    <script src="./../bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="./js/example.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+<div ng-controller="loginController" class="col-sm-12 page-header">
+    <div ng-show="connect">
+        <form class="navbar-form navbar-right" role="search">
+            <div class="form-group">
+                <input type="text" ng-model="username" class="form-control" name="username" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <input type="password" ng-model="password" class="form-control" name="password" placeholder="Password">
+            </div>
+            <button ng-click="login()" class="btn btn-default">Sign In</button>
+        </form>
+    </div>
+    <div ng-hide="connect">
+        Hello {{username}}
+    </div>
+</div>
+
+<div class="col-sm-12">
+
+    <tabset>
+        <tab ng-controller="UserController" heading="Create new user">
+            <div ng-include="'./htm/searchEvents_Form.htm'"></div>
+            <div ng-include="'./htm/myUsers_List.htm'"></div>
+            <div ng-include="'./htm/myUsers_Form.htm'"></div>
+        </tab>
+        <tab ng-controller="UserController" heading="Create new event">
+            <div ng-include="'./htm/myEvents_Form.htm'"></div>
+        </tab>
+        <tab ng-controller="UserController" ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active"
+             disabled="tab.disabled">
+            {{tab.content}}
+        </tab>
+        <tab ng-controller="TabsDemoCtrl" select="alertMe()">
+            <tab-heading>
+                <i class="glyphicon glyphicon-bell"></i> Alert!
+            </tab-heading>
+            I've got an HTML heading, and a select callback. Pretty cool!
+        </tab>
+    </tabset>
+</div>
+<div ng-view=""></div>
+</body>
+
+</html>
