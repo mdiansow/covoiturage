@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DateBox.DefaultFormat;
 import com.google.gwt.widget.client.TextButton;
-import fr.istic.m2gla.shared.factory.UserFactory;
 import fr.istic.m2gla.shared.IEvent;
 import fr.istic.m2gla.shared.IPerson;
 
@@ -74,7 +73,7 @@ public class Carshare implements EntryPoint, ClickHandler {
 
 
     /* My autobean factory */
-    private UserFactory factory = GWT.create(UserFactory.class);
+    private EntityJsonConverter.EntityFactory factory = GWT.create(EntityJsonConverter.EntityFactory.class);
 
     private static List<IEvent> EVENTS = new ArrayList<>();
 
@@ -432,7 +431,7 @@ public class Carshare implements EntryPoint, ClickHandler {
      */
     private void allPersonsRequest() {
         RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, GWT
-                .getHostPageBaseURL() + "rest/user/");
+                .getHostPageBaseURL() + "rest/event/");
         rb.setCallback(new RequestCallback() {
 
             public void onError(Request request, Throwable exception) {
@@ -442,7 +441,6 @@ public class Carshare implements EntryPoint, ClickHandler {
             public void onResponseReceived(Request request,
                                            Response response) {
                 String resp = response.getText();
-                errorLabel.setText(response.getText());
 
                 JSONValue jsonValue = JSONParser.parseStrict(resp);
 
@@ -451,11 +449,9 @@ public class Carshare implements EntryPoint, ClickHandler {
                 if ((array = jsonValue.isArray()) != null) {
                     for (int i = 0; i < array.size(); i++) {
                         String event = String.valueOf(array.get(i));
-                        IPerson p = EntityJsonConverter.getInstance().deserializeUserFromJson(event);
-                        System.out.println(i + "\t" + p.toString());
-//                        IEvent e = EntityJsonConverter.getInstance().deserializeEventFromJson(event);
-//                        EVENTS.add(e);
-//                        System.out.print("Person \t " + e.getDate());
+                        IEvent e = EntityJsonConverter.getInstance().deserializeEventFromJson(event);
+                        EVENTS.add(e);
+                        System.out.print("Person \t " + e.getDate());
                     }
                 }
                 tableEvent.setRowCount(EVENTS.size());

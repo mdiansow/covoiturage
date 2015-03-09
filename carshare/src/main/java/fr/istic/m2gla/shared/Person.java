@@ -78,7 +78,6 @@ public class Person implements IPerson {
         this.username = username;
     }
 
-    @Override
     public String getPassword() {
         return password;
     }
@@ -145,14 +144,12 @@ public class Person implements IPerson {
         this.dateDeNaissance = dateDeNaissance;
     }
 
-    @Override
     @Id
     @GeneratedValue
     public long getId() {
         return id;
     }
 
-    @Override
     public void setId(long id) {
         this.id = id;
     }

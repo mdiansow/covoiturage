@@ -14,12 +14,14 @@ import java.util.*;
  */
 @Entity
 public class Event implements IEvent {
+    @Override
     @Id
     @GeneratedValue
     public long getId() {
         return id;
     }
 
+    @Override
     public void setId(long id) {
         this.id = id;
     }
@@ -184,7 +186,6 @@ public class Event implements IEvent {
         super();
     }
 
-    @Override
     public void addTraveller(Person trav) {
         if (!this.getTravellers().contains(trav)) {
             this.travellers.add(trav);

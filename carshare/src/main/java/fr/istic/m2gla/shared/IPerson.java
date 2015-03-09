@@ -22,10 +22,6 @@ public interface IPerson extends Serializable {
 
     void setUsername(String username);
 
-    String getPassword();
-
-    void setPassword(String password);
-
     @ManyToOne
     Ville getAddress();
 
@@ -47,11 +43,6 @@ public interface IPerson extends Serializable {
 
     void setDateDeNaissance(Date dateDeNaissance);
 
-    @Id
-    @GeneratedValue
-    long getId();
-
-    void setId(long id);
 
     @OneToOne(cascade = CascadeType.ALL)
     Voiture getVoiture();
@@ -87,4 +78,6 @@ public interface IPerson extends Serializable {
     List<Avis> getMesAvis();
 
     void setMesAvis(List<Avis> mesAvis);
+
+    void setPassword(String password);
 }

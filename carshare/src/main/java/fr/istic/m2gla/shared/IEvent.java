@@ -1,18 +1,21 @@
 package fr.istic.m2gla.shared;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.io.Serializable;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Created by mds on 08/02/15.
+ * Created by mds on 09/03/15.
+ * Class ${CLASS}
  */
-public interface IEvent extends Serializable {
+public interface IEvent {
+    @Id
+    @GeneratedValue
+    long getId();
+
+    void setId(long id);
+
     Date getDate();
 
     void setDate(Date date);
@@ -48,5 +51,4 @@ public interface IEvent extends Serializable {
 
     void setOwner(Person owner);
 
-    void addTraveller(Person trav);
 }
