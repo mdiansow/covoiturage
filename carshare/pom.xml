@@ -33,6 +33,12 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwtVersion}</version>
@@ -117,10 +123,11 @@
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
+                <version>2.1</version>
                 <configuration>
                     <path>/</path>
-                    <staticContextPath>${webappDirectory}</staticContextPath>
+                    <contextFile>src/main/webapp/META-INF/context.xml</contextFile>
+                    <!--<staticContextPath>${webappDirectory}</staticContextPath>-->
                 </configuration>
             </plugin>
             <!-- GWT Maven Plugin -->
@@ -132,7 +139,6 @@
                     <execution>
                         <goals>
                             <goal>compile</goal>
-
                         </goals>
                     </execution>
                 </executions>
