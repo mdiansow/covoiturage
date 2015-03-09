@@ -18,6 +18,11 @@ public interface IPersonService {
     Person findById(@PathParam("id") long id);
 
     @GET
+    @Path("/{username}")
+    @Produces({MediaType.APPLICATION_JSON})
+    Person findByUsername(@PathParam("username") String username);
+
+    @GET
     @Produces({MediaType.APPLICATION_JSON})
     Collection<Person> findAll();
 

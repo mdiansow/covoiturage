@@ -4,9 +4,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import fr.istic.m2gla.shared.EntityFactory;
 import fr.istic.m2gla.shared.IEvent;
 import fr.istic.m2gla.shared.IPerson;
+import fr.istic.m2gla.shared.factory.UserFactory;
 
 public class EntityJsonConverter {
 
@@ -17,8 +17,10 @@ public class EntityJsonConverter {
 
 
     // Instantiate the factory
-    EntityFactory factory = GWT.create(EntityFactory.class);
+    UserFactory factory = GWT.create(UserFactory.class);
     // In non-GWT code, use AutoBeanFactorySource.create(MyFactory.class);
+
+    //IEventFactory eventFactory = GWT.create(IEventFactory.class);
 
     public IPerson makeUser() {
         // Construct the AutoBean
@@ -28,13 +30,13 @@ public class EntityJsonConverter {
         return user.as();
     }
 
-    public IEvent makeEvent(){
-        // Construct the AutoBean
-        AutoBean<IEvent> event = factory.event();
-
-        // Return the event interface shim
-        return event.as();
-    }
+//    public IEvent makeEvent(){
+//        // Construct the AutoBean
+//        AutoBean<IEvent> event = eventFactory.event();
+//
+//        // Return the event interface shim
+//        return event.as();
+//    }
 
     // Person
     String serializeUserToJson(IPerson user) {
@@ -57,10 +59,10 @@ public class EntityJsonConverter {
         return AutoBeanCodex.encode(bean).getPayload();
     }
 
-    IEvent deserializeEventFromJson(String json) {
-        AutoBean<IEvent> bean = AutoBeanCodex.decode(factory, IEvent.class, json);
-        return bean.as();
-    }
+//    IEvent deserializeEventFromJson(String json) {
+//        AutoBean<IEvent> bean = AutoBeanCodex.decode(eventFactory, IEvent.class, json);
+//        return bean.as();
+//    }
 
     public static EntityJsonConverter getInstance() {
         return instance;

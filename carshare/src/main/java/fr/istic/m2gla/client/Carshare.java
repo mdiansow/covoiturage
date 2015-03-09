@@ -17,7 +17,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DateBox.DefaultFormat;
 import com.google.gwt.widget.client.TextButton;
-import fr.istic.m2gla.shared.EntityFactory;
+import fr.istic.m2gla.shared.factory.UserFactory;
+import fr.istic.m2gla.shared.IEvent;
 import fr.istic.m2gla.shared.IPerson;
 
 import javax.ws.rs.core.MediaType;
@@ -63,7 +64,7 @@ public class Carshare implements EntryPoint, ClickHandler {
     private ListBox listBoxMarque;
     private TextButton txtbtnEnregistrerAnnonce;
     private HorizontalPanel horizontalPanelAdd;
-    private CellTable<IPerson> tableEvent;
+    private CellTable<IEvent> tableEvent;
     private TextButton txtbtnRejoindre;
     private Label errorLabel;
     private Label lblConfirmePassword;
@@ -73,9 +74,9 @@ public class Carshare implements EntryPoint, ClickHandler {
 
 
     /* My autobean factory */
-    private EntityFactory factory = GWT.create(EntityFactory.class);
+    private UserFactory factory = GWT.create(UserFactory.class);
 
-    private static List<IPerson> EVENTS = new ArrayList<>();
+    private static List<IEvent> EVENTS = new ArrayList<>();
 
 
     /**
@@ -142,22 +143,22 @@ public class Carshare implements EntryPoint, ClickHandler {
         tableEvent = new CellTable<>();
 
         //Create date column
-        TextColumn<IPerson> nameColumn = new TextColumn<IPerson>() {
+        TextColumn<IEvent> dateColumn = new TextColumn<IEvent>() {
             @Override
-            public String getValue(IPerson person) {
-                return person.getNom();
+            public String getValue(IEvent event) {
+                return String.valueOf(event.getDate());
             }
         };
         // Create prenom column
-        TextColumn<IPerson> prenomColumn = new TextColumn<IPerson>() {
+        TextColumn<IEvent> priceColumn = new TextColumn<IEvent>() {
             @Override
-            public String getValue(IPerson iPerson) {
-                return iPerson.getPrenom();
+            public String getValue(IEvent event) {
+                return String.valueOf(event.getPrix());
             }
         };
 
-        tableEvent.addColumn(nameColumn, "Nom");
-        tableEvent.addColumn(prenomColumn, "Prénom");
+        tableEvent.addColumn(dateColumn, "Date");
+        tableEvent.addColumn(priceColumn, "Prix");
 
         // Set the total row count
         tableEvent.setRowCount(EVENTS.size());
@@ -441,22 +442,25 @@ public class Carshare implements EntryPoint, ClickHandler {
             public void onResponseReceived(Request request,
                                            Response response) {
                 String resp = response.getText();
+                errorLabel.setText(response.getText());
 
                 JSONValue jsonValue = JSONParser.parseStrict(resp);
 
                 JSONArray array;
-                EVENTS = new ArrayList<IPerson>();
+                EVENTS = new ArrayList<IEvent>();
                 if ((array = jsonValue.isArray()) != null) {
                     for (int i = 0; i < array.size(); i++) {
-                        String person = String.valueOf(array.get(i));
-                        IPerson p = (IPerson) EntityJsonConverter.getInstance().deserializeUserFromJson(person);
-                        EVENTS.add(p);
-                        System.out.print("Person \t " + p.getNom());
+                        String event = String.valueOf(array.get(i));
+                        IPerson p = EntityJsonConverter.getInstance().deserializeUserFromJson(event);
+                        System.out.println(i + "\t" + p.toString());
+//                        IEvent e = EntityJsonConverter.getInstance().deserializeEventFromJson(event);
+//                        EVENTS.add(e);
+//                        System.out.print("Person \t " + e.getDate());
                     }
                 }
                 tableEvent.setRowCount(EVENTS.size());
                 tableEvent.setRowData(0, EVENTS);
-                Window.alert("Event :\t" + EVENTS.get(0).getNom() + "\tSize \t" + EVENTS.size());
+                Window.alert("Event :\t" + EVENTS.get(0) + "\tSize \t" + EVENTS.size());
             }
 
         });

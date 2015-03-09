@@ -10,7 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Collection;
 
@@ -39,6 +42,14 @@ public class PersonServiceImpl implements IPersonService {
     @Produces({MediaType.APPLICATION_JSON})
     public Person findById(@PathParam("id") long id) {
         return personIDao.findById(id);
+    }
+
+    @Override
+    @GET
+    @Path("{username}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Person findByUsername(@PathParam("username") String username) {
+        return personIDao.findByUsername(username);
     }
 
     @Override
