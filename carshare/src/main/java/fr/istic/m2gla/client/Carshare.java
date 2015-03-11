@@ -17,8 +17,8 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DateBox.DefaultFormat;
 import com.google.gwt.widget.client.TextButton;
-import fr.istic.m2gla.shared.IEvent;
-import fr.istic.m2gla.shared.IPerson;
+import fr.istic.m2gla.shared.IModele.IEvent;
+import fr.istic.m2gla.shared.IModele.IPerson;
 
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
@@ -168,7 +168,7 @@ public class Carshare implements EntryPoint, ClickHandler {
         scrollPanel.setWidget(this.tableEvent);
 
         // Affichage de l'ensemble des personnes
-        allPersonsRequest();
+        allEventsRequest();
 
 
         horizontalPanel.add(scrollPanel);
@@ -424,12 +424,14 @@ public class Carshare implements EntryPoint, ClickHandler {
         addEventFlexTable.getCellFormatter().setHorizontalAlignment(6, 0,
                 HasHorizontalAlignment.ALIGN_RIGHT);
 
+        // Show add panel
+        showAddCarAndEvent();
     }
 
     /**
      * Récupération des personnes
      */
-    private void allPersonsRequest() {
+    private void allEventsRequest() {
         RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, GWT
                 .getHostPageBaseURL() + "rest/event/");
         rb.setCallback(new RequestCallback() {
@@ -452,6 +454,7 @@ public class Carshare implements EntryPoint, ClickHandler {
                         IEvent e = EntityJsonConverter.getInstance().deserializeEventFromJson(event);
                         EVENTS.add(e);
                         System.out.print("Person \t " + e.getDate());
+                        Window.alert(String.valueOf(e.getDate()));
                     }
                 }
                 tableEvent.setRowCount(EVENTS.size());
@@ -481,14 +484,9 @@ public class Carshare implements EntryPoint, ClickHandler {
                     @Override
                     public void onResponseReceived(Request request, Response response) {
                         String username = response.getHeader("username");
-//                        IPerson user = EntityJsonConverter.getInstance().deserializeUserFromJson(response.getText());
                         System.out.println("user\t" + username);
-                        Window.alert("Bonjour " + username);
                         Cookies.setCookie("username", username);
-                        addVoitureFlexTable.setVisible(true);
-                        addEventFlexTable.setVisible(true);
-                        loginFlexTable.setVisible(false);
-                        addUserFlexTable.setVisible(false);
+                        showAddCarAndEvent();
                     }
 
                     @Override
@@ -548,8 +546,6 @@ public class Carshare implements EntryPoint, ClickHandler {
             if (!errors.equals("Remplir les champs ci-dessous\n")) {
                 Window.alert(errors);
             } else {
-
-                Window.alert("User -----  " + user.toString() + "\n" + userJson);
                 RequestBuilder userRequestBuilder = new RequestBuilder(RequestBuilder.POST, GWT.getHostPageBaseURL() + "rest/user/create");
                 userRequestBuilder.setHeader("Content-type", MediaType.APPLICATION_JSON);
                 System.out.println("USER +++++++++++ " + userJson);
@@ -564,11 +560,9 @@ public class Carshare implements EntryPoint, ClickHandler {
                             if (message.equals("SUCCESS")) ;
                             {
                                 Cookies.setCookie("username", username);
-                                addVoitureFlexTable.setVisible(true);
-                                loginFlexTable.setVisible(false);
-                                addUserFlexTable.setVisible(false);
-                                addEventFlexTable.setVisible(true);
-                                allPersonsRequest();
+                                // Show add panel
+                                showAddCarAndEvent();
+                                allEventsRequest();
                             }
                         }
 
@@ -582,5 +576,15 @@ public class Carshare implements EntryPoint, ClickHandler {
                 }
             }
         }
+    }
+
+    private void showAddCarAndEvent() {
+        String username = Cookies.getCookie("username");
+        boolean userExist = username != null;
+        addVoitureFlexTable.setVisible(userExist);
+        loginFlexTable.setVisible(!userExist);
+        addUserFlexTable.setVisible(!userExist);
+        addEventFlexTable.setVisible(userExist);
+
     }
 }

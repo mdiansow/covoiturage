@@ -1,18 +1,93 @@
-angular.module('CarModule', ['ui.bootstrap','ngCookies'])
-
-.controller('TabsDemoCtrl', function ($scope, $window) {
-  $scope.tabs = [
-    { title:'Add a car', content:'Dynamic content 1' },
-    { title:'Create new event', content:'Dynamic content 2' }
-  ];
-
-  $scope.alertMe = function() {
-    setTimeout(function() {
-      $window.alert('You\'ve selected the alert tab!');
-    });
+angular.module('CarModule', ['ui.bootstrap','ngCookies', 'ngRoute'])
+.factory('UserService', function() {
+  return {
+      connect : 'false',
   };
 })
-.controller('UserController', function userController($scope, $http) {
+// Event controller
+.controller('GlobalController', function($scope, $route, $cookies, $cookieStore, $window, $http) {
+    $scope.cities = [];
+
+    $http({
+        method: 'GET',
+        url: '/rest/user/'+$cookies.username
+    }).success (function (data){
+        $scope.user = data;
+        var date = new Date($scope.user.dateDeNaissance);
+        $scope.user.dateDeNaissance = date;
+    })
+
+    if (typeof $cookies.username != "undefined"){
+         $scope.connect = false;
+    } else {
+        $scope.connect = true;
+    }
+    $http({
+        method: 'GET',
+        url: '/rest/city/'
+    }).success (function (data){
+        $scope.cities = data;
+    })
+
+    $scope.events = [];
+    $scope.eventSearch = [];
+
+    $http({
+        method: 'GET',
+        url: '/rest/event/'
+    }).success (function (data){
+        $scope.events = data;
+    })
+
+    $scope.searchEvent = function (id){
+        $http({
+            method: 'POST',
+            url: '/rest/event/search',
+            data: $scope.eventSearch,
+            headers : {
+              'Content-Type' : 'application/json'
+            }
+            }).success (function (data){
+            console.log("Event\t  "+data)
+        })
+    }
+    $scope.joinEvent = function (id){
+        $http({
+            method: 'GET',
+            url: '/rest/event/username='+$cookies.username+'&eventID='+id,
+        }).success (function (data){
+//            $scope.events = data;
+            console.log("Event\t  "+data)
+        })
+    }
+
+    $scope.event = {};
+
+    $scope.editEvent = function(id) {
+
+    if (id == 'new') {
+        $scope.edit = true;
+        $scope.incomplete = true;
+
+        $http({
+            method : 'POST',
+            url : '/rest/event/create/'+$cookies.username,
+            data : {"date":$scope.event.date,"depart": angular.fromJson($scope.event.depart),"arrivee":angular.fromJson($scope.event.arrivee),"prix":$scope.event.prix},
+            headers : {
+              'Content-Type' : 'application/json', 'ACTION' : 'ADD'
+            }
+        }).success(function(data){
+            console.log(data)
+        })
+    } else {
+        $scope.edit = false;
+        $scope.date = $scope.events[id-1].date;
+        $scope.depart = $scope.events[id-1].depart;
+        $scope.arrivee = $scope.events[id-1].arrivee;
+        $scope.prix = $scope.events[id-1].prix;
+    }
+    };
+
 $scope.prenom = '';
 $scope.nom = '';
 $scope.password = '';
@@ -31,6 +106,7 @@ $scope.edit = true;
 $scope.error = false;
 $scope.incomplete = false;
 
+
 $scope.user={prenom:''  , nom:'', username:'' };
 
 $scope.editUser = function(id) {
@@ -38,17 +114,16 @@ $scope.editUser = function(id) {
         $scope.edit = true;
         $scope.incomplete = true;
         $scope.users.push({id:$scope.users.length, prenom: $scope.user.prenom  , nom:$scope.user.nom, username:$scope.user.username });
-        console.log("Create user " + id + " " +$scope.user.prenom)
 
         $http({
             method : 'POST',
             url : '/rest/user/create',
             data : $scope.user,
             headers : {
-              'Content-Type' : 'application/json', 'ACTION' : 'ADD'
+              'Content-Type' : 'application/json',
             }
         }).success(function(data){
-            $scope.user = {prenom:''  , nom:'', username:'' };
+            $scope.user = { };
             console.log(data)
         })
     } else {
@@ -58,6 +133,7 @@ $scope.editUser = function(id) {
         $scope.user.username = $scope.users[id-1].username;
     }
 };
+
 
 $scope.$watch('password',function() {$scope.test();});
 $scope.$watch('passw2',function() {$scope.test();});
@@ -74,16 +150,20 @@ $scope.test = function() {
         $scope.incomplete = true;
     }
 };
-})
-
-.controller('loginController',function($scope, $cookies, $cookieStore, $window, $http) {
-
     if (typeof $cookies.username != "undefined"){
          $scope.username = $cookies.username;
          $scope.connect = false;
     } else {
         $scope.connect = true;
     }
+$scope.logout = function () {
+    $cookieStore.remove("username");
+    $scope.connect = true;
+    $scope.user = '';
+    $scope.username = '';
+    $scope.username = '';
+    console.log($cookies.username)
+}
 
 $scope.login = function(){
     $http({
@@ -100,6 +180,8 @@ $scope.login = function(){
             'Content-Type' : 'application/x-www-form-urlencoded',
         }
     }).success(function (data, status, headers, config) {
+        // Reload page
+        $route.reload();
         // any required additional processing here
         var results = [];
         results.data = data;
@@ -109,9 +191,18 @@ $scope.login = function(){
         if (typeof results.headers.username != "undefined") {
             $scope.connect =  false,
             $cookies.username = results.headers.username
+
+            $scope.edit = false;
+
+            $http({
+                method: 'GET',
+                url: '/rest/user/'+$cookies.username
+            }).success (function (data){
+                $scope.user = data;
+                var date = new Date($scope.user.dateDeNaissance);
+                $scope.user.dateDeNaissance = date;
+            })
         }
-        console.log(results.headers.username)
-        console.log(results.data)
     })
 }
 });

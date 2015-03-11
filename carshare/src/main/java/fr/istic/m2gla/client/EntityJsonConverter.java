@@ -5,8 +5,9 @@ import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanFactory;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
-import fr.istic.m2gla.shared.IEvent;
-import fr.istic.m2gla.shared.IPerson;
+import fr.istic.m2gla.shared.IModele.IEvent;
+import fr.istic.m2gla.shared.IModele.IPerson;
+import fr.istic.m2gla.shared.IModele.IVille;
 
 public class EntityJsonConverter {
 
@@ -14,6 +15,8 @@ public class EntityJsonConverter {
         AutoBean<IPerson> user();
 
         AutoBean<IEvent> event();
+
+        AutoBean<IVille> ville();
     }
 
     private EntityJsonConverter() {
@@ -69,6 +72,18 @@ public class EntityJsonConverter {
         return bean.as();
     }
 
+    // Ville
+    String serializeVilleToJson(IVille ville) {
+        // Retrieve the AutoBean controller
+        AutoBean<IVille> bean = AutoBeanUtils.getAutoBean(ville);
+
+        return AutoBeanCodex.encode(bean).getPayload();
+    }
+
+    IVille deserializeVilleFromJson(String json) {
+        AutoBean<IVille> bean = AutoBeanCodex.decode(factory,IVille.class, json);
+        return bean.as();
+    }
     public static EntityJsonConverter getInstance() {
         return instance;
     }

@@ -3,17 +3,14 @@ package fr.istic.m2gla.server.services;
 import fr.istic.m2gla.server.dao.IPersonDAO;
 import fr.istic.m2gla.server.dao.PersonDAOImpl;
 import fr.istic.m2gla.shared.Person;
+import fr.istic.m2gla.shared.Voiture;
 import org.apache.log4j.Logger;
 
-import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.net.URI;
 import java.util.Collection;
 
@@ -68,18 +65,17 @@ public class PersonServiceImpl implements IPersonService {
     public String create(Person entity) {
         System.out.println("Create de AbstractDAO : " + entity.getClass().toString());
         String message = "SUCCESS";
-        Person person = personIDao.findBbyEmail(entity.getEmail());
-        if (person != null) {
-            Exception e = new PersistenceException("Email exists");
-            return e.getMessage();
-        }
-        person = personIDao.findByUsername(entity.getUsername());
-        if (person != null) {
-            Exception e = new PersistenceException("Username exists");
-            return e.getMessage();
-        }
+
         System.out.println("USER ==== " + entity.toString());
-        personIDao.create(entity);
+        if (personIDao.findByUsername(entity.getUsername()) != null) {
+            System.out.println("Entity exists");
+            personIDao.update(entity);
+            message = "UPDATE";
+        } else {
+            System.out.println("Entity not exists");
+            personIDao.create(entity);
+            message = "CREATE";
+        }
         return message;
     }
 
@@ -102,7 +98,6 @@ public class PersonServiceImpl implements IPersonService {
     @Override
     @POST
     @Consumes("application/x-www-form-urlencoded")
-//    @Produces({MediaType.APPLICATION_JSON})
     @Path("/login")
     public Response login(@FormParam("username") String username, @FormParam("password") String password) {
         System.out.println("Services \t" + username);
@@ -132,5 +127,20 @@ public class PersonServiceImpl implements IPersonService {
             }
             return Response.seeOther(URI.create(url)).build();
         }
+    }
+
+    @Override
+    @Path("/car/usr={username}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @POST
+    public Response createCar(@PathParam("usr") String username, Voiture car) {
+        Person user = personIDao.findByUsername(username);
+        String message = "Error";
+        if (user != null) {
+            user.setVoiture(car);
+            personIDao.update(user);
+            message = "Success";
+        }
+        return Response.ok().header("message", message).build();
     }
 }

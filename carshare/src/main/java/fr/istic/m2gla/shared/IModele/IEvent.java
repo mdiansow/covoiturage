@@ -1,4 +1,7 @@
-package fr.istic.m2gla.shared;
+package fr.istic.m2gla.shared.IModele;
+
+import fr.istic.m2gla.shared.Person;
+import fr.istic.m2gla.shared.Ville;
 
 import javax.persistence.*;
 import java.util.Date;

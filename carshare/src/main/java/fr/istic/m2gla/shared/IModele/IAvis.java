@@ -1,4 +1,6 @@
-package fr.istic.m2gla.shared;
+package fr.istic.m2gla.shared.IModele;
+
+import fr.istic.m2gla.shared.Person;
 
 import javax.persistence.ManyToOne;
 

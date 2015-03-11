@@ -1,5 +1,6 @@
-package fr.istic.m2gla.shared;
+package fr.istic.m2gla.shared.IModele;
 
+import fr.istic.m2gla.shared.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -68,11 +69,6 @@ public interface IPerson extends Serializable {
     List<Event> getMyEvents();
 
     void setMyEvents(List<Event> myEvents);
-
-    @OneToMany(cascade = CascadeType.PERSIST)
-    List<Event> getMyTravels();
-
-    void setMyTravels(List<Event> myTravels);
 
     @OneToMany(mappedBy = "person")
     List<Avis> getMesAvis();

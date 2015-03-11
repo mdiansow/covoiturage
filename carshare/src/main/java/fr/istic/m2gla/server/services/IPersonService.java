@@ -1,6 +1,7 @@
 package fr.istic.m2gla.server.services;
 
 import fr.istic.m2gla.shared.Person;
+import fr.istic.m2gla.shared.Voiture;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -50,4 +51,9 @@ public interface IPersonService {
     @Produces({MediaType.APPLICATION_JSON})
     @GET
     Response userProfile(@CookieParam("username") javax.ws.rs.core.Cookie username);
+
+    @Path("username={username}&eventID={eventID}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @POST
+    Response createCar(@PathParam("username") String username, Voiture car);
 }

@@ -1,0 +1,21 @@
+<div class="row" ng-if="connect"><h2>Log in for join trip</h2></div>
+<table class="table table-striped">
+  <thead><tr>
+    <th ng-if="!connect">Join</th>
+    <th>Date</th>
+    <th>Départ</th>
+    <th>Arrivée</th>
+    <th>Prix</th>
+  </tr></thead>
+  <tbody><tr ng-repeat="travel in events">
+    <td ng-if="!connect">
+      <button class="btn" ng-click="joinEvent(travel.id)">
+        <span class="glyphicon glyphicon-pencil"></span>  Join
+      </button>
+    </td>
+    <td>{{ travel.date | date:"dd/MM/yyyy 'at' HH:mm"}}</td>
+    <td>{{ travel.depart.cp }}, {{ travel.depart.nom }}</td>
+    <td>{{ travel.arrivee.cp }}, {{ travel.arrivee.nom }}</td>
+    <td>{{ travel.prix }}</td>
+  </tr></tbody>
+</table>

@@ -1,6 +1,8 @@
 package fr.istic.m2gla.shared;
 
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -110,6 +112,7 @@ public class Voiture
     }
 
     @OneToOne(mappedBy = "voiture")
+    @JsonIgnore
     public Person getPerson() {
         return person;
     }

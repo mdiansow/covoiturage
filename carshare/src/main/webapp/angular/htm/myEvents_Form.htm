@@ -1,69 +1,48 @@
 <div class="top-buffer">
-    <button class="btn btn-success" ng-click="editUser('new')">
+    <button class="btn btn-success" ng-click="editEvent('new')">
         <span class="glyphicon glyphicon-user"></span>  Create New Event
     </button>
     <hr>
 
-    <h3 ng-show="edit">Create New Event:</h3>
-
-    <h3 ng-hide="edit">Edit Event:</h3>
+    <h3 ng-hide="edit">Create New Event:</h3>
 
     <form class="form-horizontal">
         <hr>
-        <h4>Ville de départ:</h4>
-
         <div class="form-group">
-            <label class="col-sm-2 control-label">Commune:</label>
+            <label class="col-sm-4 control-label">Ville de départ</label>
 
-            <div class="col-sm-10">
-                <input type="text" ng-model="cDepart" ng-disabled="!edit" placeholder="Commune">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">Code postal:</label>
-
-            <div class="col-sm-10">
-                <input type="text" ng-model="cpDepart" ng-disabled="!edit" placeholder="Code postal">
+            <div class="col-sm-8">
+                <select ng-model="event.depart">
+                    <option ng-repeat="item in cities" value="{{item}}">{{item.cp}} - {{item.nom}}</option>
+                </select>
             </div>
         </div>
         <hr>
-        <h4>Ville d'arrivée:</h4>
 
         <div class="form-group">
-            <label class="col-sm-2 control-label">Commune:</label>
+            <label class="col-sm-4 control-label">Ville d'arrivée</label>
 
-            <div class="col-sm-10">
-                <input type="text" ng-model="cArrivee" ng-disabled="!edit" placeholder="Commune">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">Code postal:</label>
-
-            <div class="col-sm-10">
-                <input type="text" ng-model="cpArrivee" ng-disabled="!edit" placeholder="Code postal">
+            <div class="col-sm-8">
+                <select ng-model="event.arrivee">
+                    <option ng-repeat="item in cities" value={{item}}>{{item.cp}} - {{item.nom}}</option>
+                </select>
             </div>
         </div>
         <hr>
-        <h4>Tarif et Date</h4>
 
         <div class="form-group">
-            <label class="col-sm-2 control-label">Date de départ:</label>
+            <label class="col-sm-4 control-label">Date de départ:</label>
 
-            <div class="col-sm-10">
-                <input type="date" ng-model="dateDepart" ng-disabled="!edit" placeholder="dd/mm/yyyy">
+            <div class="col-sm-8">
+                <input type="date" ng-model="event.date" placeholder="dd/mm/yyyy">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-2 control-label">Prix:</label>
+            <label class="col-sm-4 control-label">Prix:</label>
 
-            <div class="col-sm-10">
-                <input type="number" min="0.0" step="0.01" ng-model="prix" ng-disabled="!edit" placeholder="Prix">
+            <div class="col-sm-8">
+                <input type="number" min="0.0" step="0.01" ng-model="event.prix" placeholder="Prix">
             </div>
         </div>
     </form>
-
-    <hr>
-    <button class="btn btn-success" ng-disabled="error || incomplete">
-        <span class="glyphicon glyphicon-save"></span>  Save Changes
-    </button>
 </div>

@@ -12,7 +12,17 @@ import java.util.List;
  * Created by mds on 10/11/14.
  */
 public interface IEventService {
-    public Event joinEvent(long eventID, long travellerID);
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/search")
+    List<Event> search(Event event);
+
+    @GET
+    @Path("username={username}&eventID={eventID}")
+    @Produces({MediaType.APPLICATION_JSON})
+    Event joinEvent(@PathParam("eventID") long eventID, @PathParam("username") String username);
 
     @Path("events/owner={id}")
     @Consumes({MediaType.APPLICATION_JSON})

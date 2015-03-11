@@ -1,5 +1,6 @@
 package fr.istic.m2gla.shared;
 
+import fr.istic.m2gla.shared.IModele.IEvent;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.persistence.*;
@@ -123,10 +124,11 @@ public class Event implements IEvent {
     /**
      * The travellers of the event
      */
+    @JsonIgnore
     private List<Person> travellers = new ArrayList<>();
 
     @Override
-    @OneToMany
+    @ManyToMany
     @JoinTable(name = "TRAVELLERS")
     public List<Person> getTravellers() {
         return travellers;
@@ -135,6 +137,7 @@ public class Event implements IEvent {
     @Override
     public void setTravellers(List<Person> travellers) {
         this.travellers = travellers;
+        System.out.println("EVENT\t"+travellers.size());
     }
 
     @JsonIgnore
@@ -171,9 +174,6 @@ public class Event implements IEvent {
     @Override
     public void setOwner(Person owner) {
         this.owner = owner;
-//        if (!owner.getMyEvents().contains(this)) {
-//            owner.addEvent(this);
-//        }
     }
 
     /**

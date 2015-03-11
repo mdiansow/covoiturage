@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,12 +30,35 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    @GET
-    @Path("/addTraveller/eID/tID")
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Event joinEvent(@PathParam("eID") long eventID, @PathParam("tID") long travellerID) {
-        Event ev = null;
-        return ev;
+    @Path("/search")
+    public List<Event> search(Event event) {
+        List<Event> eventList = new ArrayList<>();
+        eventList = eventDAO.findEvent(event.getDepart(), event.getArrivee(), event.getDate());
+        System.out.println("Search event \t " + event);
+        return eventList;
+    }
+
+    @Override
+    @GET
+    @Path("username={username}&eventID={eventID}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Event joinEvent(@PathParam("eventID") long eventID, @PathParam("username") String username) {
+        Person user = personDAO.findByUsername(username);
+        Event trip = eventDAO.findById(eventID);
+        if (user != null && trip != null) {
+            List<Person> users = trip.getTravellers();
+            if (users == null) {
+                users = new ArrayList<>();
+            }
+            users.add(user);
+            trip.setTravellers(users);
+            // Update
+            eventDAO.update(trip);
+        }
+        return trip;
     }
 
     @Override
@@ -70,16 +94,12 @@ public class EventServiceImpl implements IEventService {
     @Path("create/{username}")
     public String create(Event entity, @PathParam("username") String username) {
         String message = "ECHEC";
+        System.out.println("EVENT\t" + entity.toString());
         Person user = personDAO.findByUsername(username);
         if (user != null) {
-//            entity.setOwner(user);
-//            eventDAO.create(entity);
-//            user.getMyEvents().add(entity);
             user.addEvent(entity);
             personDAO.update(user);
             System.out.println("entity create");
-            //user.addEvent(entity);
-            //entity.setOwner(user);
             message = "SUCCESS";
         }
         return message;

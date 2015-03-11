@@ -1,6 +1,7 @@
 <div class="top-buffer">
     <button class="btn btn-success" ng-click="editUser('new')">
-        <span class="glyphicon glyphicon-user"></span>  Create New User
+        <span class="glyphicon glyphicon-user"></span> <h6 ng-show="connect"> Create New User</h6> <h6
+            ng-hide="connect"> Update User</h6>
     </button>
     <hr>
 
@@ -38,7 +39,7 @@
             <label class="col-sm-2 control-label">Birth day:</label>
 
             <div class="col-sm-10">
-                <input type="date" ng-model="user.dateDeNaissance" ng-disabled="!edit" placeholder="dd/mm/yyyy">
+                <input type="date" ng-model="user.dateDeNaissance" placeholder="dd/mm/yyyy">
             </div>
         </div>
         <div class="form-group">
@@ -70,51 +71,49 @@
             </div>
         </div>
         <hr>
-        <h3>Ville de résidence:</h3>
 
         <div class="form-group">
-            <label class="col-sm-2 control-label">Commune:</label>
+            <label class="control-label col-sm-2">Ville de résidence:</label>
 
-            <div class="col-sm-10">
-                <input type="text" ng-model="commune" placeholder="Commune">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">Code postal:</label>
-
-            <div class="col-sm-10">
-                <input type="text" ng-model="cp" placeholder="Code postal">
+            <div class="col-sm-2">
+                <select ng-model="user.address">
+                    <option ng-repeat="item in cities" value="{{item}}">{{item.cp}} - {{item.nom}}</option>
+                </select>
             </div>
         </div>
         <hr>
-        <h3>Add car</h3>
+        <h3>Manage car</h3>
 
         <div class="form-group">
             <label class="col-sm-2 control-label">Marque:</label>
 
             <div class="col-sm-10">
-                <input type="text" ng-model="marque" placeholder="Marque">
+                <input type="text" ng-model="user.voiture.marque" placeholder="Marque">
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">Modèle:</label>
 
             <div class="col-sm-10">
-                <input type="text" ng-model="model" placeholder="Modèle">
+                <input type="text" ng-model="user.voiture.model" placeholder="Modèle">
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">Confort:</label>
 
             <div class="col-sm-10">
-                <input type="text" ng-model="confort" placeholder="Confort">
+                <select name="confort" ng-model="user.voiture.confort">
+                    <option value="1">Haut de game</option>
+                    <option value="2">Moyen</option>
+                    <option value="3">Médiocre</option>
+                </select>
             </div>
         </div>
         <div ng-hide="" class="form-group">
             <label class="col-sm-2 control-label">Nb. places:</label>
 
             <div class="col-sm-10">
-                <input type="number" min="0" step="1" ng-model="nbPlaces" placeholder="Nombre de places">
+                <input type="number" min="0" step="1" ng-model="user.voiture.nbPlaces" placeholder="Nombre de places">
             </div>
         </div>
     </form>

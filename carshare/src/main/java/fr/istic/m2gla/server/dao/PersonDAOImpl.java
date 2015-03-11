@@ -40,13 +40,15 @@ public class PersonDAOImpl extends DaoImpl<Person> implements IPersonDAO {
         String req = "select p from Person p where p.username = :username";
         Person person = null;
         try {
-            person = em.createQuery(req, Person.class)
+            List<Person> persons = em.createQuery(req, Person.class)
                     .setParameter("username", username)
-                    .getSingleResult();
+                    .getResultList();
+            if (persons.size() > 0) {
+                person = persons.get(0);
+            }
         } catch (NoResultException e) {
             e.printStackTrace();
         }
-        System.out.println("Username \t" + person.getUsername());
         return person;
     }
 

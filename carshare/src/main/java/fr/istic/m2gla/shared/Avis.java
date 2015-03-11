@@ -1,6 +1,8 @@
 package fr.istic.m2gla.shared;
 
 
+import fr.istic.m2gla.shared.IModele.IAvis;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;

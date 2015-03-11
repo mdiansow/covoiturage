@@ -1,5 +1,7 @@
 package fr.istic.m2gla.shared;
 
+import fr.istic.m2gla.shared.IModele.IPerson;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -234,22 +236,22 @@ public class Person implements IPerson {
     public void setMyEvents(List<Event> myEvents) {
         this.myEvents = myEvents;
     }
-
-    /**
-     * The events during witch I am a traveller
-     */
-    private List<Event> myTravels;
-
-    @Override
-    @OneToMany(cascade = CascadeType.PERSIST)
-    public List<Event> getMyTravels() {
-        return myTravels;
-    }
-
-    @Override
-    public void setMyTravels(List<Event> myTravels) {
-        this.myTravels = myTravels;
-    }
+//
+//    @ManyToOne
+//    @Override
+//    public Event getTravel() {
+//        return travel;
+//    }
+//
+//    @Override
+//    public void setTravel(Event travel) {
+//        this.travel = travel;
+//    }
+//
+//    /**
+//     * The events during witch I am a traveller
+//     */
+//    private Event travel;
 
     /**
      *

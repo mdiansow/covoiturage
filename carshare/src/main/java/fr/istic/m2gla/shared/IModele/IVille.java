@@ -1,4 +1,4 @@
-package fr.istic.m2gla.shared;
+package fr.istic.m2gla.shared.IModele;
 
 /**
  * Created by mds on 09/02/15.

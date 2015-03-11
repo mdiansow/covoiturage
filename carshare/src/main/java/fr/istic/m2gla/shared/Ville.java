@@ -1,6 +1,8 @@
 package fr.istic.m2gla.shared;
 
 
+import fr.istic.m2gla.shared.IModele.IVille;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,23 +17,6 @@ import java.io.Serializable;
 @Entity
 public class Ville implements Serializable, IVille {
 
-//    @ManyToMany
-//    public List<Event> getEventList() {
-//        return eventList;
-//    }
-//
-//    public void setEventList(List<Event> eventList) {
-//        this.eventList = eventList;
-//    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!--  end-user-doc  -->
-     *
-     * @generated
-     * @ordered
-     */
-    //private List<Event> eventList = new ArrayList<>();
     /**
      * <!-- begin-user-doc -->
      * <!--  end-user-doc  -->
