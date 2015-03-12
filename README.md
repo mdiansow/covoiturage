@@ -19,5 +19,5 @@ Pour tester:
 ### What is this repository for? ###
 
 
-* Version : 0.5
-* Auteur : Jeremie Cotininiaux & Mamadou Dian Sow
+
+* Auteur : Jeremie Cotiniaux & Mamadou Dian Sow
