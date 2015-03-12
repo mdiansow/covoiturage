@@ -7,7 +7,7 @@
         <div class="form-group col-md-4">
             <label class="control-label">Ville de départ</label>
 
-            <select ng-model="eventSearch.depart">
+            <select ng-model="searchEvent.departS">
                 <option ng-repeat="item in cities" value="{{item}}">{{item.cp}} - {{item.nom}}</option>
             </select>
         </div>
@@ -15,14 +15,14 @@
         <div class="form-group col-md-4">
             <label class="control-label">Ville d'arrivée</label>
 
-            <select ng-model="eventSearch.arrivee">
+            <select ng-model="searchEvent.arriveeS">
                 <option ng-repeat="item in cities" value={{item}}>{{item.cp}} - {{item.nom}}</option>
             </select>
         </div>
         <div class="form-group col-md-4">
             <label class="control-label">Date de départ:</label>
 
-            <input type="date" ng-model="eventSearch.date" placeholder="dd/mm/yyyy">
+            <input type="date" ng-model="searchEvent.dateS" placeholder="dd/mm/yyyy">
         </div>
     </form>
     <hr>

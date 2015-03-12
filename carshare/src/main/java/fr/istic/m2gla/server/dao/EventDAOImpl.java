@@ -14,12 +14,15 @@ public class EventDAOImpl extends DaoImpl<Event> implements IEventDAO {
         super(entityClass);
     }
 
+    //SELECT e FROM Employee e JOIN e.phoneNumbers p WHERE p.areaCode = '613'
+
     @Override
     public List<Event> findEvent(Ville depart, Ville arrivee, Date date) {
-        String req = "select p from Event p where p.date >= :date";
+        String req = "select e from Event e JOIN e.depart d where e.date >= :date and d.id =:dID";
         return
                 em.createQuery(req, Event.class)
                         .setParameter("date", date)
+                        .setParameter("dID", depart.getId())
                         .getResultList();
     }
 }

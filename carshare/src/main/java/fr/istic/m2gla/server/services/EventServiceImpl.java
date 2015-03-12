@@ -68,7 +68,11 @@ public class EventServiceImpl implements IEventService {
     @GET
     public List<Event> myEvents(@PathParam("id") long id) {
         Person person = personDAO.findById(id);
-        return person.getMyEvents();
+        List<Event> eventList = new ArrayList<>();
+        if (person != null) {
+            eventList = person.getMyEvents();
+        }
+        return eventList;
     }
 
     @Override
@@ -97,7 +101,13 @@ public class EventServiceImpl implements IEventService {
         System.out.println("EVENT\t" + entity.toString());
         Person user = personDAO.findByUsername(username);
         if (user != null) {
-            user.addEvent(entity);
+            List<Event> eventList = user.getMyEvents();
+            if (eventList == null) {
+                eventList = new ArrayList<>();
+            }
+            eventList.add(entity);
+            user.setMyEvents(eventList);
+//            user.addEvent(entity);
             personDAO.update(user);
             System.out.println("entity create");
             message = "SUCCESS";

@@ -30,7 +30,7 @@ angular.module('CarModule', ['ui.bootstrap','ngCookies', 'ngRoute'])
     })
 
     $scope.events = [];
-    $scope.eventSearch = [];
+    $scope.searchEvent = {};
 
     $http({
         method: 'GET',
@@ -39,16 +39,16 @@ angular.module('CarModule', ['ui.bootstrap','ngCookies', 'ngRoute'])
         $scope.events = data;
     })
 
-    $scope.searchEvent = function (id){
+    $scope.searchEvent = function (){
         $http({
             method: 'POST',
             url: '/rest/event/search',
-            data: $scope.eventSearch,
+            data: {"depart":angular.fromJson($scope.searchEvent.departS), "arrivee":angular.fromJson($scope.searchEvent.arriveeS), "date":$scope.searchEvent.dateS},
             headers : {
               'Content-Type' : 'application/json'
             }
             }).success (function (data){
-            console.log("Event\t  "+data)
+            $scope.events = data;
         })
     }
     $scope.joinEvent = function (id){
