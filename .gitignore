@@ -1,5 +1,5 @@
-<<<<<<< HEAD
-pse
+
+#pse
 .classpath
 .project
 .settings/
@@ -19,4 +19,4 @@ target/
 carshare/.idea/
 carshare/target/
 carshare/carshare.iml
->>>>>>> 5c54c59... Probleme fixed
+
