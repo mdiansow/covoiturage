@@ -40,7 +40,7 @@ public class Authentication extends Controller {
         String name = values.get("name")[0];
         String password = values.get("password")[0];
 
-        if (name.equals("Jeremie") && password.equals("1234")) {
+        if (name.equals("Jeremie") && password.equals("Mamadou")) {
             session("username", name);
             return redirect("/");
         } else {

@@ -21,7 +21,7 @@ public class JourneysServiceHTTP implements JourneysService {
     /** A JSON object mapper to handle JSON serialization/deserialization */
     final ObjectMapper mapper;
     /** The Web service base URL */
-    final static String API_URL = "http://localhost:8080";
+    final static String API_URL = "http://localhost:8080/rest";
 
     public JourneysServiceHTTP(WSClient client) {
         this.client = client;

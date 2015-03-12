@@ -1,12 +1,19 @@
 @(journeyId: Long)
 
+
 @layout {
 
     <ul class="log" data-journey-id="@journeyId"></ul>
-
+    <h1>Application Covoiturage</h1><br/><br/>
     <script src="@routes.Journeys.javaScriptRouter()"></script>
     <script src="@routes.Assets.at("js/observe.js")"></script>
     <script>
         observeJourney(document.querySelector('.log'));
     </script>
+
+
+Les clients :
+
+    <br/><br/><br/><br/>
+    Récupération de la requête HTTP (document JSON) via le serviceJourneysServiceHttp et utilisation du parseur.
 }
