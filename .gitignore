@@ -1,5 +1,5 @@
 
-#pse
+#eclipse
 .classpath
 .project
 .settings/
@@ -15,7 +15,8 @@
 # Maven
 log/
 target/
-=======
+
+# =======
 carshare/.idea/
 carshare/target/
 carshare/carshare.iml
