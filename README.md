@@ -18,4 +18,4 @@ Pour tester:
 4.Le client Play est accessible à l'adresse 'http://localhost:9000/auth/login'.
 Le login est Jeremie et le mot de passe est Mamadou.
 
-Auteurs : Jeremie Cotiniaux & Mamadou Dian Sow
+Auteurs : Mamadou Dian Sow
